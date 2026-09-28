@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="description"
+            type="String" />
+
+        <variable
+            name="interval"
+            type="Integer" />
+
+        <variable
+            name="unit"
+            type="String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_unit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:text="@{title  + ` ` + interval + ` ` + (unit ?? ``)}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/ll_counter"
+            app:layout_constraintEnd_toStartOf="@id/ll_counter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ll_counter"
+            tools:text="Sound Delay: 2 sec" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:background="@drawable/shape_rect_rounded_border_4"
+            android:backgroundTint="@color/coloGray"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_remove"
+                app:tint="@color/white" />
+
+            <View
+                android:layout_width="@dimen/_2dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="@dimen/_6dp"
+                android:background="@color/coloGrayDark" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_add"
+                app:tint="@color/white" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_6dp"
+            android:layout_marginBottom="@dimen/_8dp"
+            android:text="@{description}"
+            android:textColor="@color/black"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_counter"
+            tools:text="Time delay of 2 second(s) starting sound again. starting sound again." />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

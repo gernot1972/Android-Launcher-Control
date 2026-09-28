@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="vm"
+            type="com.launcher_control_android.main.ui.home.model.HomeActVM" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".main.ui.home.view.HomeAct">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/lay_toolbar"
+            app:click="@{click}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showSelectDevice="@{true}"
+            app:showSetting="@{true}"
+            app:title="@{@string/launcher_control}" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_background"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:paddingBottom="@dimen/_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_app_window_bg" />
+
+        <TextView
+            android:id="@+id/tv_set_channel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/page_padding"
+            android:gravity="center"
+            android:text="@string/please_set_channels_in_main_configuration"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sp"
+            android:textStyle="bold"
+            android:visibility="@{!vm.hasSetAnyChannel()}"
+            tools:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/btn_unit_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20dp"
+            android:background="@drawable/shape_rect_rounded_border_10"
+            android:paddingHorizontal="@dimen/_40dp"
+            android:paddingVertical="@dimen/_8dp"
+            android:text="@string/unit_1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_34sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.prefs.unit1Model.noOfChannel > 0}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_unit_2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintVertical_bias="0.4"
+            app:layout_constraintVertical_chainStyle="packed" />
+
+        <TextView
+            android:id="@+id/btn_unit_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:background="@drawable/shape_rect_rounded_border_10"
+            android:paddingHorizontal="@dimen/_40dp"
+            android:paddingVertical="@dimen/_8dp"
+            android:text="@string/unit_2"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_34sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.prefs.unit2Model.noOfChannel > 0}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_unit_3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_unit_1" />
+
+        <TextView
+            android:id="@+id/btn_unit_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:background="@drawable/shape_rect_rounded_border_10"
+            android:paddingHorizontal="@dimen/_40dp"
+            android:paddingVertical="@dimen/_8dp"
+            android:text="@string/unit_3"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_34sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.prefs.unit3Model.noOfChannel > 0}"
+            app:layout_constraintBottom_toTopOf="@+id/btn_unit_4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_unit_2" />
+
+        <TextView
+            android:id="@+id/btn_unit_4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_16dp"
+            android:layout_marginBottom="@dimen/_20dp"
+            android:background="@drawable/shape_rect_rounded_border_10"
+            android:paddingHorizontal="@dimen/_40dp"
+            android:paddingVertical="@dimen/_8dp"
+            android:text="@string/unit_4"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_34sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.prefs.unit4Model.noOfChannel > 0}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_unit_3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

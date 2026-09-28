@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="unit"
+            type="com.launcher_control_android.data.model.response.UnitModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_unit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:text="@{@string/unit_no_colon(unit.unitNumber)}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/ll_channel_counter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ll_channel_counter"
+            tools:text="Unit 1:" />
+
+        <TextView
+            android:id="@+id/tv_channels"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_8dp"
+            android:text="@{@string/no_of_channels(unit.noOfChannel)}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/ll_channel_counter"
+            app:layout_constraintEnd_toStartOf="@id/ll_channel_counter"
+            app:layout_constraintStart_toEndOf="@id/tv_unit"
+            app:layout_constraintTop_toTopOf="@id/ll_channel_counter"
+            tools:text="1 channels" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_channel_counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:background="@drawable/shape_rect_rounded_border_4"
+            android:backgroundTint="@color/coloGray"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_minus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_remove"
+                app:tint="@color/white" />
+
+            <View
+                android:layout_width="@dimen/_2dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="@dimen/_6dp"
+                android:background="@color/coloGrayDark" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_add"
+                app:tint="@color/white" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/tv_sound_option"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_8dp"
+            android:text="@string/sound_option_installed"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/switch_sound_option"
+            app:layout_constraintEnd_toStartOf="@+id/switch_sound_option"
+            app:layout_constraintStart_toStartOf="@id/tv_unit"
+            app:layout_constraintTop_toTopOf="@id/switch_sound_option" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_sound_option"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:checked="@{unit.isSoundOptionInstalled}"
+            android:minHeight="0dp"
+            android:thumb="@drawable/thumb_selector"
+            app:layout_constraintEnd_toEndOf="@id/ll_channel_counter"
+            app:layout_constraintTop_toBottomOf="@id/ll_channel_counter"
+            app:track="@drawable/track_selector"
+            tools:checked="true" />
+
+        <TextView
+            android:id="@+id/tv_servo_version"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_8dp"
+            android:text="@string/servo_version"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/switch_servo_version"
+            app:layout_constraintEnd_toStartOf="@+id/switch_servo_version"
+            app:layout_constraintStart_toStartOf="@id/tv_unit"
+            app:layout_constraintTop_toTopOf="@id/switch_servo_version" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_servo_version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:checked="@{unit.isServoVersion}"
+            android:minHeight="0dp"
+            android:thumb="@drawable/thumb_selector"
+            app:layout_constraintEnd_toEndOf="@id/ll_channel_counter"
+            app:layout_constraintTop_toBottomOf="@id/switch_sound_option"
+            app:track="@drawable/track_selector"
+            tools:checked="true" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            app:dividerInsetEnd="@dimen/_16dp"
+            app:dividerInsetStart="@dimen/_16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/switch_servo_version" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

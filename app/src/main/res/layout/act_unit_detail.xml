@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.launcher_control_android.main.ui.unit_detail.model.UnitDetailActVM" />
+
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="showProgress"
+            type="androidx.databinding.ObservableField&lt;Boolean&gt;" />
+
+        <variable
+            name="showSecondaryProgress"
+            type="androidx.databinding.ObservableField&lt;Boolean&gt;" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".main.ui.unit_detail.view.UnitDetailAct">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/lay_toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:title="@{@string/launcher_control}" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_background"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:paddingBottom="@dimen/_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_app_window_bg" />
+
+        <View
+            android:id="@+id/bg_channel_connected"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@color/colorMaroon"
+            android:visibility="gone"
+            tools:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_launcher"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_40dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:layout_marginEnd="@dimen/_40dp"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:srcCompat="@drawable/ic_red_freesbi" />
+
+        <TextView
+            android:id="@+id/tv_bar_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:textStyle="bold"
+            android:textSize="@dimen/_24sp"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginEnd="@dimen/_6dp"
+            app:layout_constraintEnd_toStartOf="@id/tv_bar"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_bar"/>
+
+        <TextView
+            android:id="@+id/tv_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bar"
+            android:textStyle="bold"
+            android:textSize="@dimen/_16sp"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginEnd="@dimen/_70dp"
+            android:layout_marginTop="@dimen/_70dp"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"/>
+
+        <TextView
+            android:id="@+id/tv_fire"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="fire"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="@dimen/_22sp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_marginBottom="@dimen/_minus2dp"
+            app:layout_constraintStart_toStartOf="@id/tv_channel"
+            app:layout_constraintBottom_toTopOf="@id/tv_channel"/>
+
+        <TextView
+            android:id="@+id/tv_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="channel"
+            android:textStyle="bold"
+            android:textSize="@dimen/_24sp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:textColor="@color/black"
+            android:layout_marginStart="@dimen/_50dp"
+            android:layout_marginBottom="@dimen/_40dp"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"/>
+
+        <TextView
+            android:id="@+id/tv_channel_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textStyle="bold"
+            android:textSize="@dimen/_30sp"
+            android:visibility="gone"
+            android:textColor="@color/black"
+            tools:visibility="visible"
+            android:layout_marginStart="@dimen/_6dp"
+            app:layout_constraintStart_toEndOf="@id/tv_channel"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_channel"/>
+
+        <TextView
+            android:id="@+id/tv_voltage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3.77V"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sp"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:layout_margin="@dimen/_20dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"/>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_voltage"
+            android:layout_width="40dp"
+            android:layout_height="20dp"
+            android:layout_margin="@dimen/_20dp"
+            app:srcCompat="@drawable/battery50"
+            android:alpha="0.7"
+            android:visibility="gone"
+            tools:visibility="visible"
+            android:scaleX="-1"
+            android:tint="@color/white"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <TextView
+            android:id="@+id/tv_1"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.selectedUnitModel.unitNumber == 1 ? @drawable/shape_rect_rounded_10 : @drawable/shape_rect_rounded_border_10}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="1"
+            android:textColor="@{vm.selectedUnitModel.unitNumber == 1 ? @color/black : @color/white}"
+            tools:textColor="@color/black"
+            android:textSize="@dimen/_36sp"
+            android:visibility="@{vm.getPrefUtil().unit1Model.noOfChannel > 0}"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/tv_2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toBottomOf="@+id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_10" />
+
+        <TextView
+            android:id="@+id/tv_2"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.selectedUnitModel.unitNumber == 2 ? @drawable/shape_rect_rounded_10 : @drawable/shape_rect_rounded_border_10}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="2"
+            android:visibility="@{vm.getPrefUtil().unit2Model.noOfChannel > 0}"
+            android:textColor="@{vm.selectedUnitModel.unitNumber == 2 ? @color/black : @color/white}"
+            tools:visibility="visible"
+            tools:textColor="@color/white"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tv_3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_1"
+            app:layout_constraintTop_toBottomOf="@id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_border_10" />
+
+        <TextView
+            android:id="@+id/tv_3"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.selectedUnitModel.unitNumber == 3 ? @drawable/shape_rect_rounded_10 : @drawable/shape_rect_rounded_border_10}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            tools:visibility="visible"
+            android:text="3"
+            android:visibility="@{vm.getPrefUtil().unit3Model.noOfChannel > 0}"
+            android:textColor="@{vm.selectedUnitModel.unitNumber == 3 ? @color/black : @color/white}"
+            tools:textColor="@color/white"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/tv_4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_2"
+            app:layout_constraintTop_toBottomOf="@id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_border_10" />
+
+        <TextView
+            android:id="@+id/tv_4"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:background="@{vm.selectedUnitModel.unitNumber == 4 ? @drawable/shape_rect_rounded_10 : @drawable/shape_rect_rounded_border_10}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="4"
+            tools:visibility="visible"
+            android:textColor="@{vm.selectedUnitModel.unitNumber == 4 ? @color/black : @color/white}"
+            tools:textColor="@color/white"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.getPrefUtil().unit4Model.noOfChannel > 0}"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_3"
+            app:layout_constraintTop_toBottomOf="@id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_border_10" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_channels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tv_1, tv_2, tv_3, tv_4" />
+
+        <TextView
+            android:id="@+id/tv_add_on_feature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_24dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:gravity="center"
+            android:text="@{@string/add_on_features_on_unit(vm.selectedUnitModel.unitNumber)}"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier_channels" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_refresh"
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="@dimen/_70dp"
+            android:layout_marginTop="@dimen/_18dp"
+            android:background="@drawable/shape_rect_rounded_10"
+            android:backgroundTint="#2196F3"
+            android:padding="@dimen/_14dp"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintEnd_toStartOf="@id/iv_suffering"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_add_on_feature"
+            app:srcCompat="@drawable/ic_reload" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_suffering"
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="@dimen/_70dp"
+            android:background="@drawable/shape_rect_rounded_10"
+            android:backgroundTint="#FFC107"
+            android:padding="@dimen/_14dp"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintEnd_toStartOf="@id/iv_sound"
+            app:layout_constraintStart_toEndOf="@id/iv_refresh"
+            app:layout_constraintTop_toTopOf="@+id/iv_refresh"
+            app:srcCompat="@drawable/ic_suffle" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_sound"
+            android:layout_width="@dimen/_80dp"
+            android:layout_height="@dimen/_70dp"
+            android:background="@drawable/shape_rect_rounded_10"
+            android:backgroundTint="#14C81B"
+            android:padding="@dimen/_14dp"
+            android:visibility="@{vm.selectedUnitModel.soundOptionInstalled}"
+            tools:visibility="visible"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/iv_suffering"
+            app:layout_constraintTop_toTopOf="@+id/iv_refresh"
+            app:srcCompat="@drawable/ic_volume" />
+
+        <include
+            layout="@layout/progress"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:showProgress="@{showProgress}" />
+
+        <include
+            layout="@layout/progress"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:showProgress="@{showSecondaryProgress}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

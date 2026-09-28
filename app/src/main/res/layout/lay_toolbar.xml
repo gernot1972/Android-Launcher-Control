@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="showBack"
+            type="Boolean" />
+
+        <variable
+            name="showNetworkSignal"
+            type="Boolean" />
+
+        <variable
+            name="signalStrength"
+            type="Integer" />
+
+        <variable
+            name="showSetting"
+            type="Boolean" />
+
+        <variable
+            name="showSelectDevice"
+            type="Boolean" />
+
+        <variable
+            name="isGatewaySetup"
+            type="Boolean" />
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:paddingStart="@dimen/_16dp"
+        android:paddingTop="@dimen/_12dp"
+        android:paddingEnd="@dimen/_16dp"
+        android:paddingBottom="@dimen/_12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_leading_action"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/btn_back"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="@dimen/_10dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:onClick="@{click::onClick}"
+                android:visibility="@{showBack}">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_back"
+                    android:layout_width="@dimen/_26dp"
+                    android:layout_height="@dimen/_26dp"
+                    app:srcCompat="@drawable/ic_back"
+                    app:tint="@color/colorPrimary" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_4dp"
+                    android:text="@string/back"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_network"
+                android:layout_width="@dimen/_28dp"
+                android:layout_height="@dimen/_28dp"
+                android:scaleType="fitCenter"
+                android:layout_marginEnd="@dimen/_10dp"
+                android:onClick="@{click::onClick}"
+                android:visibility="@{showNetworkSignal}"
+                app:signalImage="@{signalStrength}"
+                app:srcCompat="@drawable/ic_signal_strength_4" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/btn_available_devices"
+                android:layout_width="@dimen/_36dp"
+                android:layout_height="@dimen/_36dp"
+                android:scaleType="fitCenter"
+                android:onClick="@{click::onClick}"
+                android:visibility="@{showSelectDevice}"
+                app:srcCompat="@drawable/ic_wifi"
+                app:tint="@color/colorPrimary" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <!-- GEÄNDERT: Feste Toolbar-Höhe. textView schaltet dynamisch zwischen "Launcher Control" und "DISARM IN XXs" um -->
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_60dp"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:text="@{title != null &amp;&amp; !title.isEmpty() ? title : @string/launcher_control}"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/launcher_control" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/btn_setting"
+            android:layout_width="@dimen/_36dp"
+            android:layout_height="@dimen/_36dp"
+            android:scaleType="fitCenter"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{showSetting}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_settings"
+            app:tint="@color/colorPrimary" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

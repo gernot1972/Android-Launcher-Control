@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="soundName"
+            type="String" />
+
+        <variable
+            name="isEnable"
+            type="Boolean" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:text="@{soundName}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/switch_randomize_sound"
+            app:layout_constraintEnd_toStartOf="@+id/switch_randomize_sound"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/switch_randomize_sound"
+            tools:text="Random Sound Count" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_randomize_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:checked="@{isEnable}"
+            android:minHeight="0dp"
+            android:thumb="@drawable/thumb_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:track="@drawable/track_selector"
+            tools:checked="true" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

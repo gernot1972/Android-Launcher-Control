@@ -1,0 +1,1131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="vm"
+            type="com.launcher_control_android.main.ui.home.model.LauncherControlVM" />
+
+        <variable
+            name="showSecondaryProgress"
+            type="androidx.databinding.ObservableField&lt;Boolean&gt;" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".main.ui.home.view.LauncherControlAct">
+
+        <!-- GEÄNDERT: showBack wenn Unit gewählt ist, showNetworkSignal nur auf der Startseite ohne Unit -->
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/lay_toolbar"
+            app:click="@{click}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showSetting="@{true}"
+            app:showBack="@{vm.uiState.hasUnitSelected()}"
+            app:isGatewaySetup="@{vm.uiState.isGatewaySetup}"
+            app:showSelectDevice="@{!vm.uiState.isGatewayConnected()}"
+            app:showNetworkSignal="@{vm.uiState.isGatewayConnected() &amp;&amp; !vm.uiState.hasUnitSelected()}"
+            app:signalStrength="@{vm.gatewaySignalStrength}"
+            app:title="@{vm.toolbarTitle}" />
+
+        <!-- GEÄNDERT: Horizontaler 14-Segment Einhell-Akkubalken direkt unter der Toolbar (1:1 wie iOS) -->
+        <LinearLayout
+            android:id="@+id/ll_field_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-10dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/tv_field_bat_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text="BAT "
+                android:textColor="@color/colorGreen"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/ll_bat_segments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <View android:id="@+id/seg_0" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_1" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_2" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_3" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_4" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_5" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_6" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_7" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_8" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_9" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_10" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_11" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_12" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/seg_13" android:layout_width="5dp" android:layout_height="12dp" android:layout_marginHorizontal="1dp" android:background="@drawable/shape_rect_rounded_10" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_field_bat_percent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="monospace"
+                android:text=" 100%"
+                android:textColor="@color/colorGreen"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_background"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:paddingBottom="@dimen/_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:srcCompat="@drawable/ic_app_window_bg" />
+
+        <LinearLayout
+            android:id="@+id/ll_setup_messages"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginBottom="@dimen/_300dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{!vm.uiState.hasGatewayAndUnitSet()}"
+            tools:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/tv_save_gateway_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_32dp"
+                android:alpha="0.6"
+                android:gravity="center"
+                android:onClick="@{click::onClick}"
+                android:text="@string/please_save_gateway_for_connection"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_22sp"
+                android:visibility="@{!vm.uiState.isGatewaySetup}"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/tv_set_up_unit_info"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.6"
+                android:gravity="center"
+                android:onClick="@{click::onClick}"
+                android:text="@string/please_set_up_units_in_main_configuration"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_22sp"
+                android:visibility="@{!vm.uiState.isUnitSetup}"
+                tools:visibility="visible" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_voltage"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:padding="10dp"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginEnd="50dp"
+            android:onClick="@{click::onClick}"
+            android:text="3.77V"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_22sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_voltage"
+            android:layout_width="80dp"
+            android:layout_height="50dp"
+            android:padding="15dp"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginEnd="50dp"
+            android:alpha="0.7"
+            android:onClick="@{click::onClick}"
+            android:scaleX="-1"
+            android:tint="@color/white"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:srcCompat="@drawable/battery50"
+            tools:visibility="visible" />
+
+        <!-- NEU: Animierter Glow mit exakter Frisbee-Bildkontur (iOS Metal-Style) -->
+        <!-- NEU: Animierter Glow mit exakter Frisbee-Bildkontur (iOS Metal-Style) -->
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_rainbow_glow"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleX="1.17"
+            android:scaleY="1.17"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_launcher"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/_40dp"
+            android:layout_marginTop="@dimen/_30dp"
+            android:layout_marginEnd="@dimen/_40dp"
+            android:alpha="@{vm.uiState.hasUnitDataFetched() &amp;&amp; !vm.uiState.isNoResponse() &amp;&amp; !vm.uiState.isDisarmed ? 1.0f : 0.2f}"
+            app:hasGrayScale="@{!vm.uiState.hasUnitDataFetched() || vm.uiState.isDisarmed}"
+            tools:alpha="0.1"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet()}"
+            android:src="@{context.getDrawable(vm.uiState.launcherImageResId())}"
+
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintWidth_max="360dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            tools:srcCompat="@drawable/ic_green_freesbi"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/iv_speaker"
+            android:layout_width="@dimen/_40dp"
+            android:layout_height="@dimen/_40dp"
+            app:srcCompat="@drawable/ic_volume"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            android:layout_marginTop="@dimen/_60dp"
+            android:layout_marginEnd="@dimen/_70dp"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher" />
+
+        <!-- NEU: Linkes Telemetrie-Panel (Zuweisung erfolgt sicher über Kotlin) -->
+        <LinearLayout
+            android:id="@+id/ll_left_telemetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_marginTop="-20dp"
+            android:layout_marginStart="-25dp"
+            android:visibility="@{vm.uiState.hasUnitSelected()}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_left_status_icon"
+                android:layout_width="@dimen/_30dp"
+                android:layout_height="@dimen/_30dp"
+                tools:src="@drawable/remember_me_24" />
+
+            <TextView
+                android:id="@+id/tv_left_status_text"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="0dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:fontFamily="monospace"
+                android:rotation="-90"
+                tools:text="SERVO OK"
+                android:textColor="@color/colorGreen"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <!-- 🎯 Rechte Flanke: Vertikale 4-Stufen Lautstärkestele (1:1 analog zu iOS) -->
+        <LinearLayout
+            android:id="@+id/ll_right_volume"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:layout_marginEnd="0dp"
+            android:layout_marginTop="-20dp"
+            android:visibility="@{vm.uiState.hasUnitSelected()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher">
+
+            <!-- Prozentwert (-90° gedreht) OBERHALB der Balken -->
+            <TextView
+                android:id="@+id/tv_vol_percent"
+                android:layout_width="50dp"
+                android:layout_height="42dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:fontFamily="monospace"
+                android:rotation="-90"
+                android:text="100%"
+                android:textColor="@color/colorGreen"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp" />
+
+            <!-- 4 vertikale Segmente (Stufe 4 oben = 100%, Stufe 1 unten = 15%) -->
+            <LinearLayout
+                android:id="@+id/ll_vol_segments"
+                android:layout_width="wrap_content"
+                android:layout_height="120dp"
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <View android:id="@+id/vol_seg_4" android:layout_width="18dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/vol_seg_3" android:layout_width="18dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/vol_seg_2" android:layout_width="18dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                <View android:id="@+id/vol_seg_1" android:layout_width="18dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+            </LinearLayout>
+
+            <!-- VOL-Beschriftung (-90° gedreht) UNTERHALB der Balken -->
+            <TextView
+                android:id="@+id/tv_vol_label"
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:gravity="center"
+                android:singleLine="true"
+                android:fontFamily="monospace"
+                android:rotation="-90"
+                android:text="VOL"
+                android:textColor="@color/colorGreen"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_bar_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_6dp"
+            android:text="@{vm.uiState.fetchedUnitModel.getBar().toString()}"
+            tools:text="3"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.getNextAvailableChannel() != null &amp;&amp; !vm.uiState.isUnitServoON() &amp;&amp; !vm.uiState.fetchedUnitModel.isBarFail()}"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_bar"
+            app:layout_constraintEnd_toStartOf="@id/tv_bar"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_70dp"
+            android:layout_marginEnd="@dimen/_70dp"
+            android:text="@string/bar"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_16sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.getNextAvailableChannel() != null &amp;&amp; !vm.uiState.isUnitServoON() &amp;&amp; !vm.uiState.fetchedUnitModel.isBarFail()}"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_fire"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_minus2dp"
+            android:text="fire"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_22sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.getNextAvailableChannel() != null}"
+            app:layout_constraintBottom_toTopOf="@id/tv_channel"
+            app:layout_constraintStart_toStartOf="@id/tv_channel"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_channel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_50dp"
+            android:layout_marginBottom="@dimen/_40dp"
+            android:text="channel"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.getNextAvailableChannel() != null}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_channel_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_6dp"
+            android:text="@{vm.uiState.getNextAvailableChannel().toString()}"
+            tools:text="1"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.getNextAvailableChannel() != null}"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_30sp"
+            android:textStyle="bold"
+            app:layout_constraintBaseline_toBaselineOf="@id/tv_channel"
+            app:layout_constraintStart_toEndOf="@id/tv_channel"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_empty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-4dp"
+            android:text="empty"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_22sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.isAllChannelsFired()}"
+            app:layout_constraintBottom_toTopOf="@id/tv_please_reload"
+            app:layout_constraintStart_toStartOf="@id/tv_please_reload"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_please_reload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_50dp"
+            android:layout_marginBottom="@dimen/_40dp"
+            android:text="please reload"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_22sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.isAllChannelsFired()}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_no_response"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="-4dp"
+            android:text="no response"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_22sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.isNoResponse()}"
+            app:layout_constraintBottom_toTopOf="@id/tv_from_unit"
+            app:layout_constraintStart_toStartOf="@id/tv_from_unit"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_from_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_50dp"
+            android:layout_marginBottom="@dimen/_40dp"
+            android:text="from unit"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_22sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.isNoResponse()}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_50dp"
+            android:layout_marginBottom="@dimen/_40dp"
+            android:text="@{vm.getSoundName(vm.selectedSoundIndex)}"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_connecting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:text="@string/connecting"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnecting()}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_gateway_not_connected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:text="@string/gateway_not_connected"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayNotConnected()}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"
+            tools:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tv_connected_to_gateway"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:text="@string/connected_to_gateway"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; !vm.uiState.hasUnitSelected()}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"
+            app:layout_constraintVertical_bias="0.55"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/tv_disarmed_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:alpha="0.7"
+            android:text="@{@string/disarmed_unit_n_tap_to_arm_here(vm.disarmedUnitFetchedData.getUnit())}"
+            tools:text="@string/disarmed_unit_n_tap_to_arm_here"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_24sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.disarmedUnitFetchedData != null}"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toTopOf="@id/iv_launcher"
+            app:layout_constraintVertical_bias="0.55"
+            tools:visibility="gone" />
+
+        <!-- Unit 1 Button -->
+        <TextView
+            android:id="@+id/tv_1"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_30dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.uiState.hasUnitSelected() ? context.getDrawable(vm.uiState.getUnitBackground(1)) : @drawable/selector_unit_round_bg}"
+            app:isSelected="@{!vm.uiState.hasUnitSelected()}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="1"
+            android:alpha="@{vm.uiState.isGatewayConnected() ? 1.0f : 0.1f}"
+            android:textColor="@{vm.uiState.hasUnitSelected() ? context.getColor(vm.uiState.getUnitTextColor(1)) : @color/white}"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; vm.getUnitModel(1).isVisible()}"
+            app:layout_constraintEnd_toStartOf="@+id/tv_2"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            app:layout_constraintTop_toBottomOf="@+id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_10"
+            tools:textColor="@color/black"
+            tools:visibility="visible" />
+
+        <!-- Unit 2 Button -->
+        <TextView
+            android:id="@+id/tv_2"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_30dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.uiState.hasUnitSelected() ? context.getDrawable(vm.uiState.getUnitBackground(2)) : @drawable/selector_unit_round_bg}"
+            app:isSelected="@{!vm.uiState.hasUnitSelected()}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="2"
+            android:alpha="@{vm.uiState.isGatewayConnected() ? 1.0f : 0.1f}"
+            android:textColor="@{vm.uiState.hasUnitSelected() ? context.getColor(vm.uiState.getUnitTextColor(2)) : @color/white}"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; vm.getUnitModel(2).isVisible()}"
+            app:layout_constraintEnd_toStartOf="@id/tv_3"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_1"
+            app:layout_constraintTop_toBottomOf="@id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_border_10"
+            tools:textColor="@color/white"
+            tools:visibility="visible" />
+
+        <!-- Unit 3 Button -->
+        <TextView
+            android:id="@+id/tv_3"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_30dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.uiState.hasUnitSelected() ? context.getDrawable(vm.uiState.getUnitBackground(3)) : @drawable/selector_unit_round_bg}"
+            app:isSelected="@{!vm.uiState.hasUnitSelected()}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="3"
+            android:alpha="@{vm.uiState.isGatewayConnected() ? 1.0f : 0.1f}"
+            android:textColor="@{vm.uiState.hasUnitSelected() ? context.getColor(vm.uiState.getUnitTextColor(3)) : @color/white}"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; vm.getUnitModel(3).isVisible()}"
+            app:layout_constraintEnd_toStartOf="@id/tv_4"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_2"
+            app:layout_constraintTop_toBottomOf="@id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_border_10"
+            tools:textColor="@color/white"
+            tools:visibility="visible" />
+
+        <!-- Unit 4 Button -->
+        <TextView
+            android:id="@+id/tv_4"
+            android:layout_width="@dimen/_60dp"
+            android:layout_height="@dimen/_60dp"
+            android:layout_marginStart="@dimen/_10dp"
+            android:layout_marginTop="@dimen/_30dp"
+            android:layout_marginEnd="@dimen/_10dp"
+            android:background="@{vm.uiState.hasUnitSelected() ? context.getDrawable(vm.uiState.getUnitBackground(4)) : @drawable/selector_unit_round_bg}"
+            app:isSelected="@{!vm.uiState.hasUnitSelected()}"
+            android:gravity="center"
+            android:onClick="@{click::onClick}"
+            android:padding="@dimen/_4dp"
+            android:text="4"
+            android:alpha="@{vm.uiState.isGatewayConnected() ? 1.0f : 0.1f}"
+            android:textColor="@{vm.uiState.hasUnitSelected() ? context.getColor(vm.uiState.getUnitTextColor(4)) : @color/white}"
+            android:textSize="@dimen/_36sp"
+            android:textStyle="bold"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; vm.getUnitModel(4).isVisible()}"
+            app:layout_constraintEnd_toEndOf="@id/iv_launcher"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/tv_3"
+            app:layout_constraintTop_toBottomOf="@id/iv_launcher"
+            tools:background="@drawable/shape_rect_rounded_border_10"
+            tools:textColor="@color/white"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/barrier_channels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="tv_1, tv_2, tv_3, tv_4" />
+
+        <TextView
+            android:id="@+id/tv_no_unit_selected"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_10dp"
+            android:alpha="0.7"
+            android:gravity="center"
+            android:text="@string/no_unit_is_selected"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_20sp"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; vm.uiState.selectedUnit == null}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier_channels"
+            tools:visibility="gone" />
+
+        <!-- NEU: Hülle für Program-Buttons auf der Hauptseite -->
+        <LinearLayout
+            android:id="@+id/ll_program_buttons"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginBottom="@dimen/_20dp"
+            android:orientation="horizontal"
+            android:visibility="@{vm.uiState.hasGatewayAndUnitSet() &amp;&amp; vm.uiState.isGatewayConnected() &amp;&amp; vm.uiState.selectedUnit == null}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_program_settings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="@dimen/_4dp"
+                android:backgroundTint="@color/colorSkyBlue"
+                android:enabled="@{vm.uiState.isGatewayConnected()}"
+                android:alpha="@{vm.uiState.isGatewayConnected() ? 0.8f : 0.2f}"
+                android:onClick="@{click::onClick}"
+                android:text="Program\nSettings"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_16sp"
+                app:cornerRadius="@dimen/_8dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_start_program"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/_4dp"
+                android:backgroundTint="@color/colorSkyBlue"
+                android:enabled="@{vm.uiState.isGatewayConnected()}"
+                android:alpha="@{vm.uiState.isGatewayConnected() ? 0.8f : 0.2f}"
+                android:onClick="@{click::onClick}"
+                android:text="Start\nProgram"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_16sp"
+                app:cornerRadius="@dimen/_8dp" />
+
+        </LinearLayout>
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cv_gateway_info"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/_35dp"
+            android:visibility="gone"
+            app:cardCornerRadius="@dimen/_12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="gone">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_10dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_icon"
+                    android:layout_width="@dimen/_100dp"
+                    android:layout_height="@dimen/_100dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_splash_logo" />
+
+                <TextView
+                    android:id="@+id/tv_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10dp"
+                    android:alpha="0.6"
+                    android:text="@{`Name: ` + vm.getGatewayDevice().name}"
+                    tools:text="Name: LauncherGW"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/iv_icon"
+                    app:layout_constraintTop_toTopOf="@id/iv_icon" />
+
+                <TextView
+                    android:id="@+id/tv_firmware"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.6"
+                    android:text="@{`Firmware: ` + vm.fetchedUnitFirmware}"
+                    tools:text="Firmware: 0.7"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/tv_name"
+                    app:layout_constraintStart_toStartOf="@id/tv_name"
+                    app:layout_constraintTop_toBottomOf="@id/tv_name" />
+
+                <TextView
+                    android:id="@+id/tv_voltage_msg"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.6"
+                    android:text="@{`Voltage: ` + vm.fetchedUnitVoltage + `V`}"
+                    tools:text="Voltage: 3.77V"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="@id/tv_name"
+                    app:layout_constraintStart_toStartOf="@id/tv_name"
+                    app:layout_constraintTop_toBottomOf="@id/tv_firmware" />
+
+                <TextView
+                    android:id="@+id/tv_battery"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:alpha="0.6"
+                    android:text="@{`Battery: ` + vm.getFetchedVoltagePercentage() + `%`}"
+                    tools:text="Battery: 75%"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_22sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tv_name"
+                    app:layout_constraintStart_toStartOf="@id/tv_name"
+                    app:layout_constraintTop_toBottomOf="@id/tv_voltage_msg" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/tv_add_on_feature"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:layout_marginBottom="@dimen/_16dp"
+            android:gravity="center"
+            android:text="@{@string/add_on_features_on_unit(vm.uiState.selectedUnit.unitNumber)}"
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:visibility="@{vm.uiState.selectedUnit.isChannelAdded()}"
+            app:layout_constraintBottom_toTopOf="@id/ll_reload"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier_channels"
+            app:layout_constraintVertical_bias="1.0"
+            tools:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/ll_reload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_30dp"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{vm.uiState.selectedUnit.isChannelAdded()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/ll_update"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="1.0"
+            tools:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/btn_reload_container"
+                android:layout_width="@dimen/_80dp"
+                android:layout_height="@dimen/_80dp"
+                android:background="@drawable/draw_round_white"
+                android:backgroundTint="@color/colorSkyBlue">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/btn_reload"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    app:srcCompat="@drawable/ic_add_on_reload"/>
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4dp"
+                android:text="@string/reload"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_update"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{vm.uiState.selectedUnit.isChannelAdded()}"
+            app:layout_constraintBottom_toBottomOf="@id/ll_reload"
+            app:layout_constraintEnd_toStartOf="@id/ll_sound"
+            app:layout_constraintStart_toEndOf="@id/ll_reload"
+            app:layout_constraintTop_toTopOf="@id/ll_reload"
+            tools:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/btn_update_container"
+                android:layout_width="@dimen/_80dp"
+                android:layout_height="@dimen/_80dp"
+                android:background="@drawable/draw_round_white"
+                android:backgroundTint="@color/colorOrange">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/btn_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    app:srcCompat="@drawable/ic_add_on_fetch" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4dp"
+                android:text="@string/update"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_20sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="@{vm.uiState.selectedUnit.isChannelAdded() &amp;&amp; vm.uiState.selectedUnit.soundOptionInstalled}"
+            app:layout_constraintBottom_toBottomOf="@id/ll_reload"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/ll_update"
+            app:layout_constraintTop_toTopOf="@id/ll_reload"
+            tools:visibility="gone">
+
+            <FrameLayout
+                android:id="@+id/btn_sound_container"
+                android:layout_width="@dimen/_80dp"
+                android:layout_height="@dimen/_80dp"
+                android:background="@drawable/draw_round_white"
+                android:backgroundTint="@color/colorGreen">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/btn_sound"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@drawable/ic_add_on_sound"
+                    android:padding="@dimen/_16dp"
+                    android:onClick="@{click::onClick}" />
+
+            </FrameLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_4dp"
+                android:text="@{vm.getSoundName(vm.uiState.selectedUnit.selectedSound)}"
+                tools:text="Duck"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_20sp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_select_sound_for_unit"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_24dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:layout_marginBottom="@dimen/_12dp"
+            android:gravity="center"
+            android:text="@{@string/select_sound_for_unit(vm.uiState.selectedUnit.unitNumber)}"
+            android:textColor="@color/white"
+            tools:text="@string/select_sound_for_unit"
+            android:textStyle="bold"
+            android:textSize="22sp"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/barrier_channels"
+            tools:visibility="visible" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sound_duck"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="6dp"
+            android:paddingVertical="2dp"
+            android:textSize="22sp"
+            android:backgroundTint="@{vm.selectedSoundIndex == 0 ? @color/colorGreen : @color/colorGreenLight}"
+            tools:backgroundTint="@color/colorGreen"
+            android:textColor="@{vm.selectedSoundIndex == 0 ? @color/white : @color/white60}"
+            tools:textColor="@color/white"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            tools:visibility="visible"
+            android:text="Duck"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintEnd_toStartOf="@id/btn_sound_pheasant"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_select_sound_for_unit" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sound_pheasant"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="6dp"
+            android:paddingVertical="0dp"
+            android:textSize="24sp"
+            android:backgroundTint="@{vm.selectedSoundIndex == 1 ? @color/colorGreen : @color/colorGreenLight}"
+            tools:backgroundTint="@color/colorGreenLight"
+            android:textColor="@{vm.selectedSoundIndex == 1 ? @color/white : @color/white60}"
+            tools:textColor="@color/white60"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            tools:visibility="visible"
+            android:text="Pheasant"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_sound_duck"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_sound_duck"
+            app:layout_constraintTop_toTopOf="@id/btn_sound_duck" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sound_goose"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="6dp"
+            android:paddingVertical="0dp"
+            android:textSize="24sp"
+            android:backgroundTint="@{vm.selectedSoundIndex == 2 ? @color/colorGreen : @color/colorGreenLight}"
+            tools:backgroundTint="@color/colorGreenLight"
+            android:textColor="@{vm.selectedSoundIndex == 2 ? @color/white : @color/white60}"
+            tools:textColor="@color/white60"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            tools:visibility="visible"
+            android:text="Goose"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintEnd_toStartOf="@id/btn_sound_brrr"
+            app:layout_constraintStart_toStartOf="@id/btn_sound_duck"
+            app:layout_constraintTop_toBottomOf="@id/btn_sound_duck" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sound_brrr"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="6dp"
+            android:paddingVertical="0dp"
+            android:textSize="24sp"
+            android:backgroundTint="@{vm.selectedSoundIndex == 3 ? @color/colorGreen : @color/colorGreenLight}"
+            tools:backgroundTint="@color/colorGreenLight"
+            android:textColor="@{vm.selectedSoundIndex == 3 ? @color/white : @color/white60}"
+            tools:textColor="@color/white60"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            tools:visibility="visible"
+            android:text="Brrr"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_sound_goose"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_sound_goose"
+            app:layout_constraintTop_toTopOf="@id/btn_sound_goose" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sound_gunshot"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:layout_marginEnd="6dp"
+            android:paddingVertical="0dp"
+            android:textSize="24sp"
+            android:backgroundTint="@{vm.selectedSoundIndex == 4 ? @color/colorGreen : @color/colorGreenLight}"
+            tools:backgroundTint="@color/colorGreenLight"
+            android:textColor="@{vm.selectedSoundIndex == 4 ? @color/white : @color/white60}"
+            tools:textColor="@color/white60"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            tools:visibility="visible"
+            android:text="Gunshot"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@id/btn_sound_magpie"
+            app:layout_constraintStart_toStartOf="@id/btn_sound_goose"
+            app:layout_constraintTop_toBottomOf="@id/btn_sound_goose"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_sound_magpie"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="6dp"
+            android:paddingVertical="0dp"
+            android:textSize="24sp"
+            android:backgroundTint="@{vm.selectedSoundIndex == 5 ? @color/colorGreen : @color/colorGreenLight}"
+            tools:backgroundTint="@color/colorGreenLight"
+            android:textColor="@{vm.selectedSoundIndex == 5 ? @color/white : @color/white60}"
+            tools:textColor="@color/white60"
+            android:onClick="@{click::onClick}"
+            android:visibility="@{vm.uiState.selectedUnit.isOnlySoundInstalled()}"
+            tools:visibility="visible"
+            android:text="Magpie"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/_8dp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_sound_gunshot"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btn_sound_gunshot"
+            app:layout_constraintTop_toTopOf="@id/btn_sound_gunshot" />
+
+        <include
+            layout="@layout/progress"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:showProgress="@{showSecondaryProgress}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,1108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.launcher_control_android.main.ui.channel_list.model.ChannelListActVM" />
+
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="showSecondaryProgress"
+            type="androidx.databinding.ObservableField&lt;Boolean&gt;" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        tools:context=".main.ui.channel_list.view.ChannelListAct">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/lay_toolbar"
+            app:click="@{click}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showBack="@{true}"
+            app:showSetting="@{true}" />
+
+        <TextView
+            android:id="@+id/tv_autoupdate_pressure_status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_80dp"
+            android:textColor="@{!vm.selectedUnitModel.isOnlySoundInstalled &amp;&amp; (vm.autoupdatePressureEnable &amp;&amp; !vm.selectedUnitModel.isServoVersion) ? @color/colorGreen : @color/white}"
+            android:text="@{vm.getHeaderTitleText(@string/unit_x_servo_control(vm.selectedUnitModel.unitNumber), @string/update_pressure_auto, @string/update_pressure_manual, vm.autoupdatePressureEnable)}"
+            tools:text="Unit 1\nSOUND CONTROL"
+            android:textSize="20sp"
+            android:paddingVertical="@dimen/_2dp"
+            android:onClick="@{click::onClick}"
+            app:layout_constraintTop_toTopOf="@id/toolbar"
+            app:layout_constraintBottom_toBottomOf="@id/toolbar"
+            app:layout_constraintStart_toStartOf="@id/toolbar"
+            app:layout_constraintEnd_toEndOf="@id/toolbar" />
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/iv_background"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:paddingBottom="@dimen/_24dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:srcCompat="@drawable/ic_app_window_bg" />
+
+                <!-- Vertikale Guideline exakt in der Bildschirmmitte (50%) -->
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/center_guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5" />
+
+                <!-- 🎯 LINKE FLANKE: Container für Status-Symbol, waagerechten Statustext & Stele -->
+                <LinearLayout
+                    android:id="@+id/ll_left_telemetry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:layout_marginStart="2dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!-- Status-Symbol (Lüfter / Servo / Speaker) - vergrößert auf 38dp -->
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/iv_left_status_icon"
+                        android:layout_width="38dp"
+                        android:layout_height="38dp"
+                        app:srcCompat="@drawable/ic_fan"
+                        tools:src="@drawable/ic_fan" />
+
+                    <!-- Statustext horizontal direkt unter dem Symbol -->
+                    <TextView
+                        android:id="@+id/tv_left_status_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:fontFamily="monospace"
+                        android:text="OFF"
+                        tools:text="OFF"
+                        android:textColor="@color/white"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <!-- 14-Stufen Akku-Stele -->
+                    <LinearLayout
+                        android:id="@+id/ll_battery_stele"
+                        android:layout_width="35dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="75dp"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical">
+
+                        <!-- FrameLayout simuliert ZStack: Exakt 35dp breit -->
+                        <FrameLayout
+                            android:layout_width="35dp"
+                            android:layout_height="wrap_content"
+                            android:clipChildren="false"
+                            android:clipToPadding="false">
+
+                            <LinearLayout
+                                android:id="@+id/ll_bat_segments"
+                                android:layout_width="35dp"
+                                android:layout_height="110dp"
+                                android:orientation="vertical"
+                                android:gravity="center">
+
+                                <View android:id="@+id/bat_seg_13" android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_12" android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_11" android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_10" android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_9"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_8"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_7"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_6"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_5"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_4"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_3"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_2"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_1"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                                <View android:id="@+id/bat_seg_0"  android:layout_width="35dp" android:layout_height="0dp" android:layout_weight="1" android:layout_marginVertical="1dp" android:background="@drawable/shape_rect_rounded_10" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:id="@+id/tv_bat_percent"
+                                android:layout_width="110dp"
+                                android:layout_height="35dp"
+                                android:layout_gravity="center"
+                                android:gravity="center"
+                                android:singleLine="true"
+                                android:fontFamily="monospace"
+                                android:rotation="-90"
+                                android:text="@{vm.getBatteryPercentText()}"
+                                tools:text="100%"
+                                android:textColor="@color/white"
+                                android:shadowColor="@color/black"
+                                android:shadowDx="2"
+                                android:shadowDy="2"
+                                android:shadowRadius="4"
+                                android:textSize="22sp"
+                                android:textStyle="bold" />
+                        </FrameLayout>
+
+                        <!-- 🎯 Exakt zentriert direkt UNTERHALB der Balken -->
+                        <TextView
+                            android:id="@+id/tv_bat_unit_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:fontFamily="monospace"
+                            android:text="UNIT"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="4dp" />
+
+                        <TextView
+                            android:id="@+id/tv_bat_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:fontFamily="monospace"
+                            android:text="BAT"
+                            android:textColor="@color/white"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="-2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- 🎯 RECHTE FLANKE: Ganz oben an parent verankert mit fixer 300dp Stele -->
+                <LinearLayout
+                    android:id="@+id/ll_right_volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginTop="10dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <!-- Header oben: UNIT / VOL -->
+                    <TextView
+                        android:id="@+id/tv_vol_unit_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="UNIT"
+                        android:textColor="@color/colorGreen"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="-3dp" />
+
+                    <TextView
+                        android:id="@+id/tv_vol_header_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="monospace"
+                        android:text="VOL"
+                        android:textColor="@color/colorGreen"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="6dp" />
+
+                    <!-- 4 Segmente: Fixe Gesamthöhe 250dp & 35dp Breite für perfekten Textplatz -->
+                    <LinearLayout
+                        android:id="@+id/ll_vol_segments"
+                        android:layout_width="35dp"
+                        android:layout_height="250dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <FrameLayout
+                            android:id="@+id/vol_step_4"
+                            android:layout_width="35dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_marginVertical="2dp">
+                            <View android:id="@+id/vol_bg_4" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/shape_rect_rounded_10" />
+                            <TextView android:id="@+id/tv_vol_txt_4" android:layout_width="75dp" android:layout_height="35dp" android:layout_gravity="center" android:gravity="center" android:rotation="-90" android:text="100%" android:textColor="@color/black" android:textSize="18sp" android:textStyle="bold" android:fontFamily="monospace" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:id="@+id/vol_step_3"
+                            android:layout_width="35dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_marginVertical="2dp">
+                            <View android:id="@+id/vol_bg_3" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/shape_rect_rounded_10" />
+                            <TextView android:id="@+id/tv_vol_txt_3" android:layout_width="75dp" android:layout_height="35dp" android:layout_gravity="center" android:gravity="center" android:rotation="-90" android:text="50%" android:textColor="@color/black" android:textSize="18sp" android:textStyle="bold" android:fontFamily="monospace" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:id="@+id/vol_step_2"
+                            android:layout_width="35dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_marginVertical="2dp">
+                            <View android:id="@+id/vol_bg_2" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/shape_rect_rounded_10" />
+                            <TextView android:id="@+id/tv_vol_txt_2" android:layout_width="75dp" android:layout_height="35dp" android:layout_gravity="center" android:gravity="center" android:rotation="-90" android:text="30%" android:textColor="@color/black" android:textSize="18sp" android:textStyle="bold" android:fontFamily="monospace" />
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:id="@+id/vol_step_1"
+                            android:layout_width="35dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:layout_marginVertical="2dp">
+                            <View android:id="@+id/vol_bg_1" android:layout_width="match_parent" android:layout_height="match_parent" android:background="@drawable/shape_rect_rounded_10" />
+                            <TextView android:id="@+id/tv_vol_txt_1" android:layout_width="75dp" android:layout_height="35dp" android:layout_gravity="center" android:gravity="center" android:rotation="-90" android:text="15%" android:textColor="@color/black" android:textSize="18sp" android:textStyle="bold" android:fontFamily="monospace" />
+                        </FrameLayout>
+
+                    </LinearLayout>
+                </LinearLayout>
+
+
+                <!-- Mittelachse für den gedrehten Countdown (Zentriert auf der Guideline) -->
+                <TextView
+                    android:id="@+id/tv_disarm_timer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:gravity="center"
+                    android:rotation="@{vm.selectedUnitModel.isOnlySoundInstalled ? 0f : -90f}"
+                    android:translationY="@{vm.selectedUnitModel.isOnlySoundInstalled ? @dimen/_30dp : 0f}"
+                    android:text="DISARM IN 15s"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:fontFamily="monospace"
+                    app:layout_constraintStart_toStartOf="@id/center_guideline"
+                    app:layout_constraintEnd_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_1"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_11" />
+
+                <!-- Kachel 1 -->
+                <TextView
+                    android:id="@+id/tv_1"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="12dp"
+                    app:layout_goneMarginBottom="0dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="1"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 0}"
+                    app:layout_constraintVertical_chainStyle="packed"
+                    app:layout_constraintVertical_bias="0.5"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/tv_3"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 2 -->
+                <TextView
+                    android:id="@+id/tv_2"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="2"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 1}"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_1"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_1"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 3 -->
+                <TextView
+                    android:id="@+id/tv_3"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="12dp"
+                    app:layout_goneMarginBottom="0dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="3"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 2}"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/tv_1"
+                    app:layout_constraintBottom_toTopOf="@id/tv_5"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 4 -->
+                <TextView
+                    android:id="@+id/tv_4"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="4"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 3}"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_3"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_3"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 5 -->
+                <TextView
+                    android:id="@+id/tv_5"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="12dp"
+                    app:layout_goneMarginBottom="0dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="5"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 4}"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/tv_3"
+                    app:layout_constraintBottom_toTopOf="@id/tv_7"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 6 -->
+                <TextView
+                    android:id="@+id/tv_6"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="6"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 5}"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_5"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_5"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 7 -->
+                <TextView
+                    android:id="@+id/tv_7"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="12dp"
+                    app:layout_goneMarginBottom="0dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="7"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 6}"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/tv_5"
+                    app:layout_constraintBottom_toTopOf="@id/tv_9"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 8 -->
+                <TextView
+                    android:id="@+id/tv_8"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="8"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 7}"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_7"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_7"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 9 -->
+                <TextView
+                    android:id="@+id/tv_9"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="12dp"
+                    app:layout_goneMarginBottom="0dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="9"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 8}"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/tv_7"
+                    app:layout_constraintBottom_toTopOf="@id/tv_11"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 10 -->
+                <TextView
+                    android:id="@+id/tv_10"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="10"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 9}"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_9"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_9"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 11 -->
+                <TextView
+                    android:id="@+id/tv_11"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_goneMarginBottom="0dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="11"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 10}"
+                    app:layout_constraintEnd_toStartOf="@id/center_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/tv_9"
+                    app:layout_constraintBottom_toTopOf="@id/btn_container"
+                    tools:textColor="@color/black" />
+
+                <!-- Kachel 12 -->
+                <TextView
+                    android:id="@+id/tv_12"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:layout_marginStart="20dp"
+                    android:background="@drawable/shape_rect_rounded_10"
+                    android:backgroundTint="@color/selector_channel_availability_color"
+                    android:gravity="center"
+                    android:onClick="@{click::onClick}"
+                    android:padding="@dimen/_4dp"
+                    android:text="12"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_36sp"
+                    android:textStyle="bold"
+                    android:visibility="@{vm.selectedUnitModel.noOfChannel > 11}"
+                    app:layout_constraintStart_toEndOf="@id/center_guideline"
+                    app:layout_constraintTop_toTopOf="@id/tv_11"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_11"
+                    tools:textColor="@color/black" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/btn_container"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    app:layout_constraintVertical_bias="1.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toTopOf="@id/tv_unit_1">
+
+                    <LinearLayout
+                        android:id="@+id/btn_update_large"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{click::onClick}"
+                        android:background="@drawable/shape_rect_rounded_50"
+                        android:backgroundTint="@color/colorOrange"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="@dimen/_12dp"
+                        tools:visibility="visible"
+                        android:visibility="@{vm.noOfAddedChannel() > 0 &amp;&amp; vm.noOfAddedChannel() &lt;= 8}"
+                        android:layout_marginHorizontal="@dimen/_40dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_update_large"
+                            android:layout_width="@dimen/_40dp"
+                            android:layout_height="@dimen/_40dp"
+                            app:srcCompat="@drawable/ic_add_on_fetch"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{vm.selectedUnitModel.isServoVersion ? @string/update_unit_x(vm.selectedUnitModel.unitNumber) : vm.getPressure()}"
+                            tools:text="6 bar / Set: 8 bar"
+                            android:letterSpacing="0.1"
+                            android:fontFamily="sans-serif-medium"
+                            android:paddingHorizontal="@dimen/_10dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:singleLine="true"
+                            android:textColor="@color/white"
+                            android:textSize="24sp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_reload_large"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{click::onClick}"
+                        android:background="@drawable/shape_rect_rounded_50"
+                        android:backgroundTint="@color/colorSkyBlue"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="@dimen/_12dp"
+                        tools:visibility="visible"
+                        android:visibility="@{vm.noOfAddedChannel() > 0 &amp;&amp; vm.noOfAddedChannel() &lt;= 8}"
+                        android:layout_marginHorizontal="@dimen/_40dp"
+                        android:layout_marginTop="@dimen/_8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btn_update_large">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_reload_large"
+                            android:layout_width="@dimen/_40dp"
+                            android:layout_height="@dimen/_40dp"
+                            app:srcCompat="@drawable/ic_add_on_reload"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{vm.getReloadText()}"
+                            tools:text="Reload Unit 1"
+                            android:letterSpacing="0.1"
+                            android:fontFamily="sans-serif-medium"
+                            android:paddingHorizontal="@dimen/_10dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_24sp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/btn_sound_large"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:onClick="@{click::onClick}"
+                        android:background="@drawable/shape_rect_rounded_50"
+                        android:backgroundTint="@color/colorGreen"
+                        android:paddingVertical="6dp"
+                        android:paddingHorizontal="@dimen/_12dp"
+                        tools:visibility="gone"
+                        android:visibility="@{vm.noOfAddedChannel() &lt;= 8 &amp;&amp; vm.selectedUnitModel.soundOptionInstalled &amp;&amp; !vm.selectedUnitModel.isOnlySoundInstalled}"
+                        android:layout_marginHorizontal="@dimen/_40dp"
+                        android:layout_marginTop="@dimen/_8dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/btn_reload_large">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/iv_sound_large"
+                            android:layout_width="@dimen/_40dp"
+                            android:layout_height="@dimen/_40dp"
+                            app:srcCompat="@drawable/ic_add_on_sound"
+                            android:tint="@color/white"/>
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@{@string/play + ` ` + vm.getSoundName(vm.selectedUnitModel.selectedSound)}"
+                            tools:text="Play Duck"
+                            android:letterSpacing="0.1"
+                            android:fontFamily="sans-serif-medium"
+                            android:paddingHorizontal="@dimen/_10dp"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_24sp"/>
+
+                    </LinearLayout>
+
+                    <!-- 🎯 REINER SOUNDUNIT-MODUS: 6 grüne Buttons (Sound 1 bis Sound 6) -->
+                    <LinearLayout
+                        android:id="@+id/ll_sound_unit_buttons"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:visibility="@{vm.selectedUnitModel.isOnlySoundInstalled}"
+                        tools:visibility="visible"
+                        android:layout_marginHorizontal="65dp"
+                        android:layout_marginTop="4dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <!-- Sound 1 -->
+                        <LinearLayout
+                            android:id="@+id/btn_sound_1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/shape_rect_rounded_50"
+                            android:backgroundTint="@color/colorGreen"
+                            android:paddingVertical="16dp"
+                            android:paddingHorizontal="12dp"
+                            android:gravity="center"
+                            android:onClick="@{click::onClick}">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.getSoundButtonText(0)}"
+                                tools:text="Sound 1 - Duck"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+
+                        <!-- Sound 2 -->
+                        <LinearLayout
+                            android:id="@+id/btn_sound_2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/shape_rect_rounded_50"
+                            android:backgroundTint="@color/colorGreen"
+                            android:paddingVertical="16dp"
+                            android:paddingHorizontal="12dp"
+                            android:gravity="center"
+                            android:onClick="@{click::onClick}">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.getSoundButtonText(1)}"
+                                tools:text="Sound 2 - Pheasant"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+
+                        <!-- Sound 3 -->
+                        <LinearLayout
+                            android:id="@+id/btn_sound_3"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/shape_rect_rounded_50"
+                            android:backgroundTint="@color/colorGreen"
+                            android:paddingVertical="16dp"
+                            android:paddingHorizontal="12dp"
+                            android:gravity="center"
+                            android:onClick="@{click::onClick}">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.getSoundButtonText(2)}"
+                                tools:text="Sound 3 - Goose"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+
+                        <!-- Sound 4 -->
+                        <LinearLayout
+                            android:id="@+id/btn_sound_4"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/shape_rect_rounded_50"
+                            android:backgroundTint="@color/colorGreen"
+                            android:paddingVertical="16dp"
+                            android:paddingHorizontal="12dp"
+                            android:gravity="center"
+                            android:onClick="@{click::onClick}">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.getSoundButtonText(3)}"
+                                tools:text="Sound 4 - Brrr"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+
+                        <!-- Sound 5 -->
+                        <LinearLayout
+                            android:id="@+id/btn_sound_5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="10dp"
+                            android:background="@drawable/shape_rect_rounded_50"
+                            android:backgroundTint="@color/colorGreen"
+                            android:paddingVertical="16dp"
+                            android:paddingHorizontal="12dp"
+                            android:gravity="center"
+                            android:onClick="@{click::onClick}">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.getSoundButtonText(4)}"
+                                tools:text="Sound 5 - Gunshot"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+
+                        <!-- Sound 6 -->
+                        <LinearLayout
+                            android:id="@+id/btn_sound_6"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:background="@drawable/shape_rect_rounded_50"
+                            android:backgroundTint="@color/colorGreen"
+                            android:paddingVertical="16dp"
+                            android:paddingHorizontal="12dp"
+                            android:gravity="center"
+                            android:onClick="@{click::onClick}">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{vm.getSoundButtonText(5)}"
+                                tools:text="Sound 6 - Magpie"
+                                android:textColor="@color/white"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- GEÄNDERT: Titel nur bei > 8 und < 12 Kanälen anzeigen (bei 12 Kanälen ausgeblendet) -->
+                    <TextView
+                        android:id="@+id/tv_add_on_feature"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_18dp"
+                        android:layout_marginEnd="@dimen/_18dp"
+                        android:layout_marginTop="0dp"
+                        android:gravity="center"
+                        android:text="@{@string/add_on_features_on_unit(vm.selectedUnitModel.unitNumber)}"
+                        tools:text="Add-on features on unit 1"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="18sp"
+                        android:visibility="@{vm.noOfAddedChannel() > 8 &amp;&amp; vm.noOfAddedChannel() &lt; 12}"
+                        tools:visibility="gone"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+
+                    <LinearLayout
+                        android:id="@+id/ll_reload"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_12dp"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="@{vm.noOfAddedChannel() > 8}"
+                        tools:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@id/tv_add_on_feature"
+                        app:layout_constraintEnd_toStartOf="@id/ll_update"
+                        app:layout_constraintStart_toStartOf="parent">
+
+                        <FrameLayout
+                            android:id="@+id/btn_reload_container"
+                            android:layout_width="@dimen/_80dp"
+                            android:layout_height="@dimen/_80dp"
+                            android:background="@drawable/draw_round_white"
+                            android:backgroundTint="@color/colorSkyBlue">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/btn_reload"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/_16dp"
+                                android:onClick="@{click::onClick}"
+                                app:srcCompat="@drawable/ic_add_on_reload"/>
+
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_4dp"
+                            android:text="@string/reload"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_20sp"
+                            android:visibility="@{vm.noOfAddedChannel() &lt; 12}" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_update"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="@{vm.noOfAddedChannel() > 8}"
+                        tools:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/ll_reload"
+                        app:layout_constraintEnd_toStartOf="@id/ll_sound"
+                        app:layout_constraintStart_toEndOf="@id/ll_reload"
+                        app:layout_constraintTop_toTopOf="@id/ll_reload">
+
+                        <FrameLayout
+                            android:id="@+id/btn_update_container"
+                            android:layout_width="@dimen/_80dp"
+                            android:layout_height="@dimen/_80dp"
+                            android:background="@drawable/draw_round_white"
+                            android:backgroundTint="@color/colorOrange">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/btn_update"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="@dimen/_16dp"
+                                android:onClick="@{click::onClick}"
+                                app:srcCompat="@drawable/ic_add_on_fetch" />
+
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_4dp"
+                            android:text="@string/update"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_20sp"
+                            android:visibility="@{vm.noOfAddedChannel() &lt; 12}" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/ll_sound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:visibility="@{vm.noOfAddedChannel() > 8 &amp;&amp; vm.selectedUnitModel.soundOptionInstalled}"
+                        tools:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="@id/ll_reload"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/ll_update"
+                        app:layout_constraintTop_toTopOf="@id/ll_reload">
+
+                        <FrameLayout
+                            android:id="@+id/btn_sound_container"
+                            android:layout_width="@dimen/_80dp"
+                            android:layout_height="@dimen/_80dp"
+                            android:background="@drawable/draw_round_white"
+                            android:backgroundTint="@color/colorGreen">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/btn_sound"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:srcCompat="@drawable/ic_add_on_sound"
+                                android:padding="@dimen/_16dp"
+                                android:onClick="@{click::onClick}" />
+
+                        </FrameLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_4dp"
+                            android:text="@string/sound"
+                            android:textAllCaps="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_20sp"
+                            android:visibility="@{vm.noOfAddedChannel() &lt; 12}" />
+
+                    </LinearLayout>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <TextView
+                    android:id="@+id/tv_unit_1"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:text="1"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="@color/selector_unit_text_color"
+                    android:background="@drawable/selector_unit_round_bg"
+                    app:isSelected="@{vm.selectedUnitModel.unitNumber == 1}"
+                    android:textSize="@dimen/_36sp"
+                    android:onClick="@{click::onClick}"
+                    android:visibility="@{vm.getUnitModel(1).isVisible()}"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    android:layout_marginStart="@dimen/_8dp"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:layout_marginBottom="@dimen/_18dp"
+                    app:layout_constraintEnd_toStartOf="@id/tv_unit_2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <TextView
+                    android:id="@+id/tv_unit_2"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:text="2"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:onClick="@{click::onClick}"
+                    android:visibility="@{vm.getUnitModel(2).isVisible()}"
+                    android:textColor="@color/selector_unit_text_color"
+                    android:background="@drawable/selector_unit_round_bg"
+                    app:isSelected="@{vm.selectedUnitModel.unitNumber == 2}"
+                    android:textSize="@dimen/_36sp"
+                    android:layout_marginStart="@dimen/_8dp"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:layout_marginBottom="@dimen/_18dp"
+                    app:layout_constraintEnd_toStartOf="@id/tv_unit_3"
+                    app:layout_constraintStart_toEndOf="@id/tv_unit_1"
+                    app:layout_constraintTop_toTopOf="@id/tv_unit_1" />
+
+                <TextView
+                    android:id="@+id/tv_unit_3"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:text="3"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:onClick="@{click::onClick}"
+                    android:visibility="@{vm.getUnitModel(3).isVisible()}"
+                    android:textColor="@color/selector_unit_text_color"
+                    android:background="@drawable/selector_unit_round_bg"
+                    app:isSelected="@{vm.selectedUnitModel.unitNumber == 3}"
+                    android:textSize="@dimen/_36sp"
+                    android:layout_marginStart="@dimen/_8dp"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:layout_marginBottom="@dimen/_18dp"
+                    app:layout_constraintEnd_toStartOf="@id/tv_unit_4"
+                    app:layout_constraintStart_toEndOf="@id/tv_unit_2"
+                    app:layout_constraintTop_toTopOf="@id/tv_unit_1" />
+
+                <TextView
+                    android:id="@+id/tv_unit_4"
+                    android:layout_width="@dimen/_60dp"
+                    android:layout_height="@dimen/_60dp"
+                    android:text="4"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:layout_marginStart="@dimen/_8dp"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:layout_marginBottom="@dimen/_18dp"
+                    android:onClick="@{click::onClick}"
+                    android:visibility="@{vm.getUnitModel(4).isVisible()}"
+                    android:textColor="@color/selector_unit_text_color"
+                    android:background="@drawable/selector_unit_round_bg"
+                    app:isSelected="@{vm.selectedUnitModel.unitNumber == 4}"
+                    android:textSize="@dimen/_36sp"
+                    app:layout_constraintStart_toEndOf="@id/tv_unit_3"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_unit_1" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+        <include
+            layout="@layout/progress"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar"
+            app:showProgress="@{showSecondaryProgress}" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

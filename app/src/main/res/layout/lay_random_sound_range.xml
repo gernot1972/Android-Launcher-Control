@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="title"
+            type="String" />
+
+        <variable
+            name="isEnable"
+            type="Boolean" />
+
+        <variable
+            name="description"
+            type="String" />
+
+        <variable
+            name="minValue"
+            type="Integer" />
+
+        <variable
+            name="maxValue"
+            type="Integer" />
+
+        <variable
+            name="unit"
+            type="String" />
+
+        <variable
+            name="validationMsg"
+            type="String" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:text="@{title}"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="@id/switch_randomize_sound"
+            app:layout_constraintEnd_toStartOf="@+id/switch_randomize_sound"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/switch_randomize_sound"
+            tools:text="Random Sound Count" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_randomize_sound"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:checked="@{isEnable}"
+            android:minHeight="0dp"
+            android:thumb="@drawable/thumb_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:track="@drawable/track_selector"
+            tools:checked="true" />
+
+        <TextView
+            android:id="@+id/tv_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_6dp"
+            android:text="@{description}"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/switch_randomize_sound"
+            tools:text="When ON, number of sounds per run is random between min and max below." />
+
+        <TextView
+            android:id="@+id/tv_min"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:text="@string/min"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toStartOf="@id/ll_counter_min"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ll_counter_min" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_counter_min"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            android:layout_marginEnd="@dimen/_8dp"
+            android:background="@drawable/shape_rect_rounded_border_4"
+            android:backgroundTint="@color/coloGray"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/tv_min"
+            app:layout_constraintEnd_toStartOf="@id/tv_max"
+            app:layout_constraintTop_toBottomOf="@id/tv_desc">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_minus_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_remove"
+                app:tint="@color/white" />
+
+            <View
+                android:layout_width="@dimen/_2dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="@dimen/_6dp"
+                android:background="@color/coloGrayDark" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_plus_min"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_add"
+                app:tint="@color/white" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/tv_min_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{minValue + ` ` + (unit ?? ``)}"
+            tools:text="1"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toEndOf="@id/tv_min"
+            app:layout_constraintStart_toStartOf="@id/tv_min"
+            app:layout_constraintTop_toBottomOf="@id/tv_min" />
+
+        <TextView
+            android:id="@+id/tv_max"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:text="@string/max"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toStartOf="@id/ll_counter_max"
+            app:layout_constraintStart_toEndOf="@id/ll_counter_min"
+            app:layout_constraintTop_toTopOf="@id/ll_counter_max" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/ll_counter_max"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8dp"
+            android:layout_marginEnd="@dimen/_8dp"
+            android:background="@drawable/shape_rect_rounded_border_4"
+            android:backgroundTint="@color/coloGray"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toEndOf="@id/tv_max"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_desc">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_minus_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_remove"
+                app:tint="@color/white" />
+
+            <View
+                android:layout_width="@dimen/_2dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="@dimen/_6dp"
+                android:background="@color/coloGrayDark" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/iv_plus_max"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="@dimen/_8dp"
+                android:paddingVertical="@dimen/_3dp"
+                app:srcCompat="@drawable/ic_add"
+                app:tint="@color/white" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <TextView
+            android:id="@+id/tv_max_value"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@{maxValue + ` ` + (unit ?? ``)}"
+            tools:text="3"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="16dp"
+            app:layout_constraintEnd_toEndOf="@id/tv_max"
+            app:layout_constraintStart_toStartOf="@id/tv_max"
+            app:layout_constraintTop_toBottomOf="@id/tv_max" />
+
+        <TextView
+            android:id="@+id/tv_validation_msg"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_6dp"
+            android:text="@{validationMsg}"
+            android:textColor="@color/black"
+            android:textSize="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_min_value"
+            tools:text="Range 2...10 sec; max must be larger than min." />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/group_expanded_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="@{isEnable}"
+            tools:visibility="gone"
+            app:constraint_referenced_ids="tv_min,ll_counter_min,tv_min_value,tv_max,ll_counter_max,tv_max_value,tv_validation_msg"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,0 +1,739 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <data>
+
+        <variable
+            name="vm"
+            type="com.launcher_control_android.main.ui.main_configuration.model.MainConfigurationActVM" />
+
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".main.ui.main_configuration.view.MainConfigurationAct">
+
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/lay_toolbar"
+            app:click="@{click}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showBack="@{true}"
+            app:title="@{@string/main_configuration}" />
+
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tv_device_settings"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_20dp"
+                    android:text="@string/device_settings"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_advanced_control_is_standard"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:text="@string/advanced_control_is_standard"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginStart="@dimen/_16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_advanced_control_is_standard"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_advanced_control_is_standard"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_advanced_control_is_standard" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_advanced_control_is_standard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.advancedControlIsStandardEnable}"
+                    android:minHeight="0dp"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_device_settings"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <TextView
+                    android:id="@+id/tv_advanced_control_is_standard_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:text="@{vm.advancedControlIsStandardEnable ? @string/advanced_control_is_standard_on_desc : @string/advanced_control_is_standard_off_desc}"
+                    tools:text="@string/advanced_control_is_standard_on_desc"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_advanced_control_is_standard" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_advanced_control_is_standard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16dp"
+                    app:dividerInsetEnd="@dimen/_16dp"
+                    app:dividerInsetStart="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_advanced_control_is_standard_desc" />
+
+                <include
+                    android:id="@+id/lay_stay_armed"
+                    layout="@layout/lay_interval_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:description="@{@string/stay_armed_desc(vm.armedInterval)}"
+                    app:interval="@{vm.armedInterval}"
+                    app:unit="@{`sec`}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_advanced_control_is_standard"
+                    app:title="@{@string/stay_armed_for_colon}" />
+
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_stay_armed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:dividerInsetEnd="@dimen/_16dp"
+                    app:dividerInsetStart="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_stay_armed" />
+
+                <TextView
+                    android:id="@+id/tv_autoupdate_pressure"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:text="@string/autoupdate_pressure"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginStart="@dimen/_16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_autoupdate_pressure"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_autoupdate_pressure"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_autoupdate_pressure" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_autoupdate_pressure"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.autoupdatePressureEnable}"
+                    android:minHeight="0dp"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_stay_armed"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <TextView
+                    android:id="@+id/tv_autoupdate_pressure_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:text="@{vm.autoupdatePressureEnable ? @string/autoupdate_pressure_on_desc : @string/autoupdate_pressure_off_desc}"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:paddingBottom="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_autoupdate_pressure" />
+
+                <include
+                    android:id="@+id/lay_autoupdate_interval"
+                    layout="@layout/lay_interval_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:description="@{@string/autoupdate_interval_desc(vm.autoupdatePressureDelay)}"
+                    app:interval="@{vm.autoupdatePressureDelay}"
+                    app:unit="@{`sec`}"
+                    android:visibility="@{vm.autoupdatePressureEnable}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_autoupdate_pressure_desc"
+                    app:title="@{@string/autoupdate_interval_colon}" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_autoupdate_interval"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:dividerInsetEnd="@dimen/_16dp"
+                    app:dividerInsetStart="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_autoupdate_interval" />
+
+                <include
+                    android:id="@+id/lay_unit_1"
+                    layout="@layout/lay_unit_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_autoupdate_interval"
+                    app:unit="@{vm.unit1}" />
+
+                <include
+                    android:id="@+id/lay_unit_2"
+                    layout="@layout/lay_unit_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="@id/lay_unit_1"
+                    app:layout_constraintStart_toStartOf="@id/lay_unit_1"
+                    app:layout_constraintTop_toBottomOf="@id/lay_unit_1"
+                    app:unit="@{vm.unit2}" />
+
+                <include
+                    android:id="@+id/lay_unit_3"
+                    layout="@layout/lay_unit_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="@id/lay_unit_1"
+                    app:layout_constraintStart_toStartOf="@id/lay_unit_1"
+                    app:layout_constraintTop_toBottomOf="@id/lay_unit_2"
+                    app:unit="@{vm.unit3}" />
+
+                <include
+                    android:id="@+id/lay_unit_4"
+                    layout="@layout/lay_unit_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="@id/lay_unit_1"
+                    app:layout_constraintStart_toStartOf="@id/lay_unit_1"
+                    app:layout_constraintTop_toBottomOf="@id/lay_unit_3"
+                    app:unit="@{vm.unit4}" />
+
+                <TextView
+                    android:id="@+id/tv_sound_and_fire"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_20dp"
+                    android:text="@string/sound_and_fire_settings"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/_16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_unit_4" />
+
+                <TextView
+                    android:id="@+id/tv_sound_and_fire_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    android:text="@{@string/sound_and_fire_settings_desc(vm.noOfSoundCount, vm.delayInFire, vm.delayInSound)}"
+                    tools:text="@string/sound_and_fire_settings_desc"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sp"
+                    app:layout_constraintEnd_toEndOf="@id/tv_sound_and_fire"
+                    app:layout_constraintStart_toStartOf="@id/tv_sound_and_fire"
+                    app:layout_constraintTop_toBottomOf="@id/tv_sound_and_fire" />
+
+                <include
+                    android:id="@+id/lay_sound_count"
+                    layout="@layout/lay_interval_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_12dp"
+                    app:description="@{@string/sound_count_desc(vm.noOfSoundCount)}"
+                    app:interval="@{vm.noOfSoundCount}"
+                    app:layout_constraintEnd_toEndOf="@id/lay_unit_1"
+                    app:layout_constraintStart_toStartOf="@id/lay_unit_1"
+                    app:layout_constraintTop_toBottomOf="@id/tv_sound_and_fire_desc"
+                    app:title="@{@string/sound_count_colon}" />
+
+                <include
+                    android:id="@+id/lay_sound_delay"
+                    layout="@layout/lay_interval_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    app:description="@{@string/sound_delay_desc(vm.delayInSound)}"
+                    app:interval="@{vm.delayInSound}"
+                    app:layout_constraintEnd_toEndOf="@id/lay_unit_1"
+                    app:layout_constraintStart_toStartOf="@id/lay_unit_1"
+                    app:layout_constraintTop_toBottomOf="@id/lay_sound_count"
+                    app:title="@{@string/sound_delay_colon}"
+                    app:unit="@{@string/sec}" />
+
+                <include
+                    android:id="@+id/lay_fire_delay"
+                    layout="@layout/lay_interval_settings"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    app:description="@{@string/fire_delay_desc(vm.delayInFire)}"
+                    app:interval="@{vm.delayInFire}"
+                    app:layout_constraintEnd_toEndOf="@id/lay_unit_1"
+                    app:layout_constraintStart_toStartOf="@id/lay_unit_1"
+                    app:layout_constraintTop_toBottomOf="@id/lay_sound_delay"
+                    app:title="@{@string/fire_delay_colon}"
+                    app:unit="@{@string/sec}" />
+
+                <TextView
+                    android:id="@+id/tv_gunshot_after_launch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:text="@string/gunshot_after_launch"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginStart="@dimen/_16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_gunshot_after_launch"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_gunshot_after_launch"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_gunshot_after_launch" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_gunshot_after_launch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.gunshotAfterLaunchEnable}"
+                    android:minHeight="0dp"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_fire_delay"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <TextView
+                    android:id="@+id/tv_gunshot_after_launch_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:text="@string/gunshot_after_launch_desc"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_gunshot_after_launch" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_sound_and_fire"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_gunshot_after_launch_desc" />
+
+                <TextView
+                    android:id="@+id/tv_randomize_sound_and_fire"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:text="@string/randomize_sound_and_fire"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginStart="@dimen/_16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_randomize_sound_and_fire"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_randomize_sound_and_fire"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_randomize_sound_and_fire" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_randomize_sound_and_fire"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.randomizedSoundAndFireEnable}"
+                    android:minHeight="0dp"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_sound_and_fire"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <TextView
+                    android:id="@+id/tv_randomize_sound_and_fire_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:text="@string/randomize_sound_and_fire_desc"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_randomize_sound_and_fire" />
+
+                <include
+                    android:id="@+id/lay_random_sound_count"
+                    layout="@layout/lay_random_sound_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_randomize_sound_and_fire_desc"
+                    app:title="@{@string/random_sound_count}"
+                    app:isEnable="@{vm.randomSoundCountEnable}"
+                    app:description="@{@string/random_sound_count_desc}"
+                    app:minValue="@{vm.randomSoundCountMin}"
+                    app:maxValue="@{vm.randomSoundCountMax}"
+                    app:validationMsg="@{@string/random_sound_count_validation}"/>
+
+                <include
+                    android:id="@+id/lay_random_sound_delay"
+                    layout="@layout/lay_random_sound_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_count"
+                    app:title="@{@string/random_sound_delay}"
+                    app:isEnable="@{vm.randomSoundDelayEnable}"
+                    app:description="@{@string/random_sound_delay_desc}"
+                    app:minValue="@{vm.randomSoundDelayMin}"
+                    app:maxValue="@{vm.randomSoundDelayMax}"
+                    app:unit="@{@string/sec}"
+                    app:validationMsg="@{@string/random_sound_delay_validation}"/>
+
+                <include
+                    android:id="@+id/lay_random_fire_delay"
+                    layout="@layout/lay_random_sound_range"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_delay"
+                    app:title="@{@string/random_fire_delay}"
+                    app:isEnable="@{vm.randomFireDelayEnable}"
+                    app:description="@{@string/random_fire_delay_desc}"
+                    app:minValue="@{vm.randomFireDelayMin}"
+                    app:maxValue="@{vm.randomFireDelayMax}"
+                    app:unit="@{@string/sec}"
+                    app:validationMsg="@{@string/random_fire_delay_validation}"/>
+
+                <TextView
+                    android:id="@+id/tv_randomize_sound"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:text="@string/randomize_sound"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginStart="@dimen/_16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_randomize_sound"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_randomize_sound"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_randomize_sound" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_randomize_sound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.randomizedSoundEnable}"
+                    android:minHeight="0dp"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_fire_delay"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <TextView
+                    android:id="@+id/tv_randomize_sound_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:text="@string/randomize_sound_desc"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:paddingBottom="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_randomize_sound" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_randomize_sound_and_fire_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{vm.randomizedSoundAndFireEnable, default=gone}"
+                    app:constraint_referenced_ids="lay_random_sound_count,lay_random_sound_delay,lay_random_fire_delay,tv_randomize_sound,switch_randomize_sound,tv_randomize_sound_desc"/>
+
+                <TextView
+                    android:id="@+id/tv_same_sound_for_multiple_sounds"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_8dp"
+                    android:text="@string/same_sound_for_multiple_sounds"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_marginStart="@dimen/_16dp"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_same_sound_for_multiple_sounds"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_same_sound_for_multiple_sounds"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_same_sound_for_multiple_sounds" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_same_sound_for_multiple_sounds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.canSameSoundForMultipleSounds}"
+                    android:minHeight="0dp"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_randomize_sound_desc"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <TextView
+                    android:id="@+id/tv_same_sound_for_multiple_sounds_desc"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:text="@string/same_sound_for_multiple_sounds_desc"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:paddingBottom="@dimen/_8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_same_sound_for_multiple_sounds" />
+
+                <include
+                    android:id="@+id/lay_random_sound_switch_1"
+                    layout="@layout/lay_random_sound_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_4dp"
+                    app:soundName="@{@string/using_sound_1}"
+                    app:isEnable="@{vm.isSoundSelectedForRandomize(0)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_same_sound_for_multiple_sounds_desc"/>
+
+                <include
+                    android:id="@+id/lay_random_sound_switch_2"
+                    layout="@layout/lay_random_sound_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    app:soundName="@{@string/using_sound_2}"
+                    app:isEnable="@{vm.isSoundSelectedForRandomize(1)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_switch_1"/>
+
+                <include
+                    android:id="@+id/lay_random_sound_switch_3"
+                    layout="@layout/lay_random_sound_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    app:soundName="@{@string/using_sound_3}"
+                    app:isEnable="@{vm.isSoundSelectedForRandomize(2)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_switch_2"/>
+
+                <include
+                    android:id="@+id/lay_random_sound_switch_4"
+                    layout="@layout/lay_random_sound_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    app:soundName="@{@string/using_sound_4}"
+                    android:layout_marginTop="@dimen/_10dp"
+                    app:isEnable="@{vm.isSoundSelectedForRandomize(3)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_switch_3"/>
+
+                <include
+                    android:id="@+id/lay_random_sound_switch_5"
+                    layout="@layout/lay_random_sound_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    app:soundName="@{@string/using_sound_5}"
+                    app:isEnable="@{vm.isSoundSelectedForRandomize(4)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_switch_4"/>
+
+                <include
+                    android:id="@+id/lay_random_sound_switch_6"
+                    layout="@layout/lay_random_sound_switch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10dp"
+                    app:soundName="@{@string/using_sound_6}"
+                    app:isEnable="@{vm.isSoundSelectedForRandomize(5)}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_switch_5"/>
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/group_randomize_sound_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="@{vm.randomizedSoundAndFireEnable &amp;&amp; vm.randomizedSoundEnable, default=gone}"
+                    app:constraint_referenced_ids="tv_same_sound_for_multiple_sounds,switch_same_sound_for_multiple_sounds,tv_same_sound_for_multiple_sounds_desc,lay_random_sound_switch_1,lay_random_sound_switch_2,lay_random_sound_switch_3,lay_random_sound_switch_4,lay_random_sound_switch_5,lay_random_sound_switch_6"/>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_audio_top"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16dp"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/lay_random_sound_switch_6" />
+
+                <TextView
+                    android:id="@+id/tv_show_bluetooth_audio"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_16dp"
+                    android:text="@string/show_bluetooth_audio"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/switch_show_bluetooth_audio"
+                    app:layout_constraintEnd_toStartOf="@+id/switch_show_bluetooth_audio"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/switch_show_bluetooth_audio" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/switch_show_bluetooth_audio"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:checked="@{vm.isShowBluetoothAudio}"
+                    android:minHeight="0dp"
+                    android:visibility="gone"
+                    android:thumb="@drawable/thumb_selector"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_audio_top"
+                    app:track="@drawable/track_selector"
+                    tools:checked="true" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_audio_bottom"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/switch_show_bluetooth_audio" />
+
+                <TextView
+                    android:id="@+id/tv_note"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_20dp"
+                    android:layout_marginTop="@dimen/_10dp"
+                    android:text="@string/setting_note"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:linksClickable="true"
+                    android:alpha="0.8"
+                    android:autoLink="web"
+                    android:lineSpacingMultiplier="1.5"
+                    android:textStyle="bold"
+                    android:textColorLink="@color/colorPrimary"
+                    android:layout_marginBottom="@dimen/_20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_audio_bottom" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_app_version"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_note" />
+
+                <TextView
+                    android:id="@+id/tv_app_version"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="@dimen/_20dp"
+                    android:layout_marginTop="@dimen/_12dp"
+                    android:layout_marginBottom="@dimen/_20dp"
+                    android:gravity="center"
+                    android:text="@{`App Version: ` + vm.appVersion}"
+                    tools:text="App Version: 1.0"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:alpha="0.6"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/divider_app_version" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </ScrollView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

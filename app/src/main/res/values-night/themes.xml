@@ -1,0 +1,24 @@
+<resources>
+
+    <style name="AppTheme" parent="App.Theme.Dark" />
+
+    <style name="App.Theme.Dark" parent="App.Theme">
+        <!--Color-->
+        <!--<item name="colorPrimary">@color/blue_200</item>
+        <item name="colorPrimaryVariant">@color/blue_300</item>
+        <item name="colorSecondary">@color/orange_300</item>
+        <item name="colorSecondaryVariant">@color/orange_300</item>
+
+        <item name="android:colorBackground">@color/black_900</item>
+        <item name="colorSurface">@color/black_800</item>
+        <item name="colorError">@color/red_200</item>
+
+        <item name="colorOnPrimary">@color/black_900</item>
+        <item name="colorOnSecondary">@color/black_900</item>
+        <item name="colorOnBackground">@color/white_50</item>
+        <item name="colorOnSurface">@color/white_50</item>
+        <item name="colorOnError">@color/black_900</item>
+
+        <item name="android:statusBarColor">@color/black_900_alpha_087</item>-->
+    </style>
+</resources>
