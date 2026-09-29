@@ -58,6 +58,7 @@ abstract class BaseAct<binding : ViewDataBinding, VM : BaseVM>(
         }*/
         super.onCreate(savedInstanceState)
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
 
         binding = DataBindingUtil.setContentView<binding>(this, layoutId).apply {

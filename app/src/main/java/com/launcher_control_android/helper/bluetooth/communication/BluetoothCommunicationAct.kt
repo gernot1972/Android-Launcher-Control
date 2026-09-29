@@ -35,7 +35,7 @@ abstract class BluetoothCommunicationAct<binding : ViewDataBinding, VM : BaseVM>
     private var serviceCallback: (() -> Unit)? = null
     private var rssiJob: Job? = null
 
-    fun onDeviceConnectionChange(isConnected: Boolean) {
+    open fun onDeviceConnectionChange(isConnected: Boolean) {
 
     }
 

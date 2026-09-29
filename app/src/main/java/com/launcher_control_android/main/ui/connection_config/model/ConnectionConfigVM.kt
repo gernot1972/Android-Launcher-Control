@@ -9,4 +9,9 @@ import javax.inject.Inject
 @HiltViewModel
 class ConnectionConfigVM @Inject constructor(private val prefs: PrefUtil) : BaseVM() {
     val savedBluetoothDevice = MutableLiveData(prefs.savedBluetoothDevice)
+    var lastVoltageResponse: String?
+        get() = prefs.lastVoltageResponse
+        set(value) {
+            prefs.lastVoltageResponse = value
+        }
 }

@@ -635,6 +635,13 @@ class ChannelListAct :
         }
     }
 
+    override fun onDeviceConnectionChange(isConnected: Boolean) {
+        super.onDeviceConnectionChange(isConnected)
+        if (!isConnected) {
+            finish() // 🎯 Schließt die Advanced-View sofort bei Verbindungsverlust
+        }
+    }
+
     override fun onCharacteristicWrite(
         gatt: BluetoothGatt?,
         characteristic: BluetoothGattCharacteristic?,

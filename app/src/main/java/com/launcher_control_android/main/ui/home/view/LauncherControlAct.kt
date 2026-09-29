@@ -429,7 +429,7 @@ class LauncherControlAct :
 
             // 1. Rainbow-Glow-Animation (iOS-Style)
             val shouldAnimateGlow = if (state.isSoundOnlyMode()) {
-                state.hasUnitDataFetched() && !state.isDisarmed && state.hasUnitSelected()
+                state.hasUnitDataFetched() && !state.isNoResponse() && !state.isDisarmed && state.hasUnitSelected()
             } else {
                 state.getNextAvailableChannel() != null && !state.isDisarmed && state.hasUnitSelected()
             }
@@ -505,10 +505,12 @@ class LauncherControlAct :
     }
 
     private fun connectGateway() {
-        if (vm.uiState.value?.hasGatewayAndUnitSet() == true && vm.uiState.value?.isGatewayNotConnected() == true) {
+        if (vm.uiState.value?.isGatewaySetup == true) {
             checkBluetooth {
-                vm.setGatewayConnecting()
-                startConnectingBlinkAnimation()
+                if (vm.uiState.value?.isGatewayNotConnected() == true) {
+                    vm.setGatewayConnecting()
+                    startConnectingBlinkAnimation()
+                }
                 startBluetoothService {
                     setGatewayConnected()
                 }
@@ -526,6 +528,18 @@ class LauncherControlAct :
             }
             binding.invalidateAll()
             binding.executePendingBindings()
+        }
+    }
+
+    override fun onServicesDiscovered(gatt: BluetoothGatt?, isServiceFound: Boolean) {
+        super.onServicesDiscovered(gatt, isServiceFound)
+        runOnUiThread {
+            if (isServiceFound) {
+                setGatewayConnected()
+                if (prefs.autoLockRemote) {
+                    sendCommand("Prog-L1")
+                }
+            }
         }
     }
 
@@ -1135,6 +1149,7 @@ class LauncherControlAct :
     }
 
     private val settingActResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        deviceAddress = prefs.savedBluetoothDevice?.address ?: ""
         vm.reloadState()
         connectGateway()
         vm.setSelectedUnit(null)
@@ -1175,8 +1190,23 @@ class LauncherControlAct :
                             }
                         } else {
                             // NEU: Wenn keine Unit gewählt ist, trennt ein einfacher Klick die Verbindung (Disconnect)
-                            bluetoothService?.disconnectBluetoothDevice()
-                            setGatewayDisconnected()
+                            if (prefs.autoLockRemote && bluetoothService?.isDeviceConnected() == true) {
+                                sendCommand("Prog-L0")
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    //delay(0)
+                                    bluetoothService?.disconnectBluetoothDevice()
+                                    stopGatewaySignalStrengthUpdate()
+                                    vm.setGatewayDisconnected()
+                                    binding.ivVoltage.isVisible = false
+                                    binding.tvVoltage.isVisible = false
+                                }
+                            } else {
+                                bluetoothService?.disconnectBluetoothDevice()
+                                stopGatewaySignalStrengthUpdate()
+                                vm.setGatewayDisconnected()
+                                binding.ivVoltage.isVisible = false
+                                binding.tvVoltage.isVisible = false
+                            }
                         }
                     }
                     else -> {
@@ -1294,9 +1324,17 @@ class LauncherControlAct :
     private fun setGatewayDisconnected() {
         stopGatewaySignalStrengthUpdate()
         vm.setGatewayDisconnected()
+        resetSelectUnit()
         // GEÄNDERT: Batterie-Icon & Spannungstext bei getrenntem Gateway ausblenden
         binding.ivVoltage.isVisible = false
         binding.tvVoltage.isVisible = false
+    }
+
+    override fun onDestroy() {
+        if (prefs.autoLockRemote && vm.uiState.value?.isGatewayConnected() == true) {
+            sendCommand("Prog-L0")
+        }
+        super.onDestroy()
     }
 
     override fun onPause() {
@@ -1308,6 +1346,11 @@ class LauncherControlAct :
     override fun onResume() {
         super.onResume()
         startBlinkAnimation()
+
+        // 🎯 Falls die Verbindung getrennt ist, Hauptseite sofort auf NOT CONNECTED schalten
+        if (bluetoothService?.isDeviceConnected() == false) {
+            setGatewayDisconnected()
+        }
 
         /**
          * Reload unit

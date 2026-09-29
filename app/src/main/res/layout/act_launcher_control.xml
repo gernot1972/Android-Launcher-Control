@@ -105,6 +105,7 @@
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:paddingBottom="@dimen/_24dp"
+            android:alpha="0.6"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -440,10 +441,13 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_22sp"
             android:textStyle="bold"
-            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.isNoResponse()}"
+            android:visibility="@{vm.uiState.isNoResponse()}"
             app:layout_constraintBottom_toTopOf="@id/tv_from_unit"
             app:layout_constraintStart_toStartOf="@id/tv_from_unit"
+            android:translationX="@{vm.uiState.selectedUnit.isOnlySoundInstalled() ? 60f : 0f}"
+            android:translationY="@{vm.uiState.selectedUnit.isOnlySoundInstalled() ? -120f : 0f}"
             tools:visibility="gone" />
+
 
         <TextView
             android:id="@+id/tv_from_unit"
@@ -455,9 +459,11 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_22sp"
             android:textStyle="bold"
-            android:visibility="@{vm.uiState.canShowFireChannel() &amp;&amp; vm.uiState.isNoResponse()}"
+            android:visibility="@{vm.uiState.isNoResponse()}"
             app:layout_constraintBottom_toBottomOf="@id/iv_launcher"
             app:layout_constraintStart_toStartOf="@id/iv_launcher"
+            android:translationX="@{vm.uiState.selectedUnit.isOnlySoundInstalled() ? 80f : 0f}"
+            android:translationY="@{vm.uiState.selectedUnit.isOnlySoundInstalled() ? -110f : 0f}"
             tools:visibility="gone" />
 
         <TextView
