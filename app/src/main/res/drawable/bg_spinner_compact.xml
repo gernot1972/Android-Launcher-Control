@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Dunkler abgerundeter Hintergrund mit dezentem Rahmen -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#262626" />
+            <stroke android:width="1dp" android:color="#404040" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+
+    <!-- Kleines, kompaktes Dreieck-Pfeilchen ganz rechts -->
+    <item android:gravity="end|center_vertical" android:right="6dp">
+        <vector
+            android:width="10dp"
+            android:height="6dp"
+            android:viewportWidth="10"
+            android:viewportHeight="6">
+            <path
+                android:fillColor="#AAAAAA"
+                android:pathData="M0,0 L10,0 L5,6 Z" />
+        </vector>
+    </item>
+</layer-list>

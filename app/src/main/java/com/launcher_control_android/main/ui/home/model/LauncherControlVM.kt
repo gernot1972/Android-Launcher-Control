@@ -7,6 +7,8 @@ import com.launcher_control_android.data.model.response.UnitModel
 import com.launcher_control_android.helper.util.PrefUtil
 import com.launcher_control_android.helper.util.getVoltagePercentage
 import com.launcher_control_android.helper.util.logE
+import androidx.lifecycle.viewModelScope
+import com.launcher_control_android.helper.executor.ProgramExecutor
 import com.launcher_control_android.main.base.BaseVM
 import com.launcher_control_android.main.common.FetchedChannelModel
 import com.launcher_control_android.main.ui.home.GatewayConnectionStatus
@@ -19,6 +21,36 @@ class LauncherControlVM @Inject constructor(val prefs: PrefUtil) : BaseVM() {
 
     val uiState: MutableLiveData<LauncherControlUIStateModel> = MutableLiveData<LauncherControlUIStateModel>()
     val toolbarTitle = MutableLiveData<String>("Launcher Control")
+
+    // LiveData für Bluetooth-Befehle aus dem ProgramExecutor
+    val programCommandToSend = MutableLiveData<String>()
+
+    // ProgramExecutor-Instanzierung mit benannten Parametern
+    val programExecutor by lazy {
+        ProgramExecutor(
+            scope = viewModelScope,
+            onSendCommand = { command ->
+                programCommandToSend.postValue(command)
+            },
+            onGetNextChannel = { unit ->
+                val fetchedModel = uiState.value?.fetchedUnitModel
+                val unitModel = getUnitModel(unit)
+                val maxChannels = unitModel?.noOfChannel ?: 12
+                val nextChan = fetchedModel?.getNextChannel()
+
+                if (fetchedModel != null) {
+                    if (nextChan != null && nextChan <= maxChannels) nextChan else null
+                } else {
+                    1 // Fallback: Kanal 1, falls noch keine Telemetrie geladen wurde
+                }
+            },
+            onChannelFired = { unit, channel ->
+                uiState.value?.fetchedUnitModel?.markChannelAsFire(channel)
+            }
+        )
+    }
+
+    val programState = programExecutor.uiState
 
     init {
         reloadState()
@@ -207,5 +239,31 @@ class LauncherControlVM @Inject constructor(val prefs: PrefUtil) : BaseVM() {
         if (selectedPressureIndex != -1) {
             setPressureForSelectedUnit(selectedPressureIndex)
         }
+    }
+
+    /**
+     * Lädt die gespeicherte Programm-Sequenz und startet die Ausführung
+     */
+    fun startProgram() {
+        val sequence = prefs.programSequence
+        if (sequence.isNotEmpty()) {
+            programExecutor.startExecution(sequence)
+        }
+    }
+
+    fun toggleProgramPause() {
+        programExecutor.togglePause()
+    }
+
+    fun stepProgramForward() {
+        programExecutor.stepForward()
+    }
+
+    fun stepProgramBackward() {
+        programExecutor.stepBackward()
+    }
+
+    fun stopProgram() {
+        programExecutor.stopProgram()
     }
 }

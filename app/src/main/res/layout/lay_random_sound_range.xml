@@ -46,7 +46,7 @@
             android:text="@{title}"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:textSize="16dp"
+            android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="@id/switch_randomize_sound"
             app:layout_constraintEnd_toStartOf="@+id/switch_randomize_sound"
             app:layout_constraintStart_toStartOf="parent"
@@ -88,7 +88,7 @@
             android:text="@string/min"
             android:textColor="@color/black"
             android:textStyle="bold"
-            android:textSize="16dp"
+            android:textSize="18dp"
             app:layout_constraintEnd_toStartOf="@id/ll_counter_min"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/ll_counter_min" />

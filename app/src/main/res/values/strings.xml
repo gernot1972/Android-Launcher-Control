@@ -56,8 +56,8 @@
     <string name="gunshot_after_launch">Gunshot After Launch</string>
     <string name="gunshot_after_launch_desc">Switch ON to perform a gunshot sound 1 second after Fire.</string>
     <string name="advanced_control_is_standard">Advanced Control is standard</string>
-    <string name="advanced_control_is_standard_on_desc">Switch OFF to have simple control as standard control. With this setting off, you can still go to advanced control by performing a long press on the square unit number button.</string>
-    <string name="advanced_control_is_standard_off_desc">Switch ON to have advanced control as standard control. With this setting on, you can still go to simple control by performing a long press on the square unit number button.</string>
+    <string name="advanced_control_is_standard_on_desc">Switch OFF to have simple control as standard control layout. With this setting off, you can still go to advanced control by performing a long press on the square unit number button.</string>
+    <string name="advanced_control_is_standard_off_desc">Switch ON to have advanced control as standard control layout. With this setting on, you can still go to simple control by performing a long press on the square unit number button.</string>
     <string name="randomize_sound_and_fire">Randomize Sound &amp; Fire</string>
     <string name="randomize_sound_and_fire_desc">When ON, sound count, delays and sound choice can be randomized on each long press.</string>
     <string name="random_sound_count">Random Sound Count</string>

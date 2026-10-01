@@ -65,6 +65,9 @@
         <activity
             android:name=".main.ui.bluetooth_devices.view.BluetoothDevicesAct"
             android:exported="false" />
+        <activity
+            android:name=".main.ui.program_settings.view.ProgramSettingsAct"
+            android:exported="false" />
     </application>
 
 </manifest>

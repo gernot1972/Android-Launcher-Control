@@ -33,6 +33,8 @@ import com.launcher_control_android.AppConstants.Prefs.UNIT_4_MODEL
 import com.launcher_control_android.Strings
 import com.launcher_control_android.data.model.response.DeviceModel
 import com.launcher_control_android.data.model.response.UnitModel
+import com.launcher_control_android.data.model.response.ProgramItemModel
+import com.launcher_control_android.data.model.response.ProgramProfileModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -291,6 +293,41 @@ constructor(@ApplicationContext context: Context) {
         get() = prefs.getStringSet(SELECTED_SOUND_FOR_RANDOMIZE, mutableSetOf()) ?: mutableSetOf()
         set(data) {
             prefEditor.putStringSet(SELECTED_SOUND_FOR_RANDOMIZE, data)
+            prefEditor.apply()
+        }
+
+    var programSequence: List<ProgramItemModel>
+        get() {
+            val json = prefs.getString("PROGRAM_SEQUENCE_CONFIG", null)
+            return if (!json.isNullOrEmpty()) {
+                json.fromJson<List<ProgramItemModel>>() ?: ProgramItemModel.getDefaultSequence()
+            } else {
+                ProgramItemModel.getDefaultSequence()
+            }
+        }
+        set(data) {
+            prefEditor.putString("PROGRAM_SEQUENCE_CONFIG", data.toJson())
+            prefEditor.apply()
+        }
+
+    var programProfiles: List<ProgramProfileModel>
+        get() {
+            val json = prefs.getString("PROGRAM_PROFILES_CONFIG", null)
+            return if (!json.isNullOrEmpty()) {
+                json.fromJson<List<ProgramProfileModel>>() ?: emptyList()
+            } else {
+                emptyList()
+            }
+        }
+        set(data) {
+            prefEditor.putString("PROGRAM_PROFILES_CONFIG", data.toJson())
+            prefEditor.apply()
+        }
+
+    var activeProfileName: String
+        get() = prefs.getString("ACTIVE_PROGRAM_PROFILE_NAME", "Default Program") ?: "Default Program"
+        set(value) {
+            prefEditor.putString("ACTIVE_PROGRAM_PROFILE_NAME", value)
             prefEditor.apply()
         }
 
