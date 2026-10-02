@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 class ProgramExecutor(
+    private val context: android.content.Context,
     private val scope: CoroutineScope,
     private val onSendCommand: (String) -> Unit,
     private val onGetNextChannel: ((unit: Int) -> Int?)? = null,
@@ -155,6 +156,7 @@ class ProgramExecutor(
             }
             val delayMillis = (totalDelaySeconds * 1000).toLong()
             val startTime = System.currentTimeMillis()
+            var lastKeepAliveTime = System.currentTimeMillis()
 
             // Countdown-Schleife (alle 100ms Aktualisierung für flüssigen Fortschritt)
             while (isActive && _uiState.value.isRunning && !_uiState.value.isPaused) {
@@ -166,6 +168,16 @@ class ProgramExecutor(
                     lineProgress = progress,
                     remainingDelaySeconds = remainingSec
                 )
+
+                // 🎯 Gezielte Prüfung: Nur wenn das aktuelle Schritt-Delay länger als 3 Minuten (180s) ist,
+                // senden wir alle 3 Minuten ein Keep-Alive-Signal an die Remote
+                if (totalDelaySeconds > 180) {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastKeepAliveTime >= 180_000L) {
+                        lastKeepAliveTime = currentTime
+                        sendKeepAlivePing()
+                    }
+                }
 
                 if (progress >= 1f) break
                 delay(100)
@@ -191,6 +203,7 @@ class ProgramExecutor(
         executionJob?.cancel()
         executionJob = null
         _uiState.value = ProgramExecutionState(isRunning = false, isPaused = false)
+        com.launcher_control_android.helper.service.ProgramExecutionService.stopService(context)
     }
 
     /**
@@ -258,25 +271,24 @@ class ProgramExecutor(
     }
 
     /**
-     * Springt durch Antippen einer Zeile direkt zum gewählten Schritt
+     * Springt durch Antippen einer Zeile direkt zum gewählten Schritt (nur erlaubt im Pausenmodus)
      */
     fun jumpToStep(targetIndex: Int) {
+        // Navigation per Tapping nur im Pausenmodus zulassen
+        if (!_uiState.value.isPaused) return
+
         if (targetIndex !in currentSequence.indices || !currentSequence[targetIndex].isValidSequence) return
         executionJob?.cancel()
         executionJob = null
-        val wasExecuting = !_uiState.value.isPaused
 
         _uiState.value = _uiState.value.copy(
             isRunning = true,
+            isPaused = true,
             isSequenceEnd = false,
             currentItem = targetIndex,
             lineProgress = 1.0f, // 🎯 Linie zum Zielschritt sofort 100% gezeichnet
             remainingDelaySeconds = 0 // 🎯 Delay auf 0, damit bei Play sofort gefeuert wird
         )
-
-        if (wasExecuting) {
-            runNextStep(fromResume = false, isManualJump = true)
-        }
     }
 
     fun stepBackward() {
@@ -397,5 +409,21 @@ class ProgramExecutor(
 
         _uiState.value = _uiState.value.copy(currentItem = nextIndex)
         runNextStep(fromResume = false)
+    }
+
+    /**
+     * Sendet alle 3 Minuten einen Keep-Alive-Befehl für die erste in der Sequenz genutzte Unit (z. B. "1E", "2E"),
+     * um ein automatisches Abschalten der Fernbedienung (5-Minuten Kill-Timer) zu verhindern.
+     */
+    private fun sendKeepAlivePing() {
+        val targetUnit = currentSequence.firstOrNull { it.isValidSequence }?.fireUnit ?: 1
+        val keepAliveCmd = when (targetUnit) {
+            1 -> "1E"
+            2 -> "2E"
+            3 -> "3E"
+            4 -> "4E"
+            else -> "1E"
+        }
+        onSendCommand(keepAliveCmd)
     }
 }

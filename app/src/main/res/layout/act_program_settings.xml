@@ -58,10 +58,12 @@
                     android:layout_height="50dp"
                     android:layout_weight="1"
                     android:backgroundTint="#333333"
-                    android:text="Load Profile"
+                    android:text="Manage Profile"
                     android:textAllCaps="false"
                     android:textColor="#FFFFFF"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:maxLines="1"
+                    android:paddingHorizontal="4dp" />
 
                 <Button
                     android:id="@+id/btn_save_profile_as"

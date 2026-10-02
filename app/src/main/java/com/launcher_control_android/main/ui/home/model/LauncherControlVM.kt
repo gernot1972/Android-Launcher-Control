@@ -17,7 +17,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class LauncherControlVM @Inject constructor(val prefs: PrefUtil) : BaseVM() {
+class LauncherControlVM @Inject constructor(
+    @dagger.hilt.android.qualifiers.ApplicationContext private val context: android.content.Context,
+    val prefs: PrefUtil
+) : BaseVM() {
 
     val uiState: MutableLiveData<LauncherControlUIStateModel> = MutableLiveData<LauncherControlUIStateModel>()
     val toolbarTitle = MutableLiveData<String>("Launcher Control")
@@ -28,6 +31,7 @@ class LauncherControlVM @Inject constructor(val prefs: PrefUtil) : BaseVM() {
     // ProgramExecutor-Instanzierung mit benannten Parametern
     val programExecutor by lazy {
         ProgramExecutor(
+            context = context,
             scope = viewModelScope,
             onSendCommand = { command ->
                 programCommandToSend.postValue(command)

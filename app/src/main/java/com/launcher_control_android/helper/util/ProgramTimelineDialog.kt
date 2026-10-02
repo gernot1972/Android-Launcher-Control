@@ -41,14 +41,51 @@ class ProgramTimelineDialog(
 
         val builder = AlertDialog.Builder(context)
 
+        // 🎯 Root-Layout als FrameLayout, um das Sperr-Overlay darüber legen zu können
+        val rootLayout = android.widget.FrameLayout(context)
+
         val mainContainer = LinearLayout(context).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(paddingPx, paddingPx, paddingPx, paddingPx)
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.WRAP_CONTENT
             )
         }
+
+        // 🎯 Header-Leiste mit Titel und Lock-Button oben rechts
+        val headerBar = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(0, 0, 0, (8 * density).toInt())
+        }
+
+        val tvHeaderTitle = TextView(context).apply {
+            text = "Sequence Control"
+            textSize = 18f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(Color.BLACK)
+            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+        }
+
+        // Taschensperre-Overlaydeklaration
+        lateinit var lockOverlay: LinearLayout
+
+        val btnLock = TextView(context).apply {
+            text = "🔒 Lock"
+            textSize = 14f
+            setTextColor(Color.WHITE)
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setPadding((10 * density).toInt(), (6 * density).toInt(), (10 * density).toInt(), (6 * density).toInt())
+            background = createRoundedDrawable("#555555", 12f)
+            setOnClickListener {
+                lockOverlay.visibility = android.view.View.VISIBLE
+            }
+        }
+
+        headerBar.addView(tvHeaderTitle)
+        headerBar.addView(btnLock)
+        mainContainer.addView(headerBar)
 
         // 🎯 Scrollbarer Bereich für die Timeline-Schritte
         val scrollView = ScrollView(context).apply {
@@ -94,11 +131,78 @@ class ProgramTimelineDialog(
         controlBar.addView(btnRestart)
         controlBar.addView(btnPrev)
         controlBar.addView(btnPlayPause)
-        controlBar.addView(btnStop)
         controlBar.addView(btnNext)
+        controlBar.addView(btnStop)
 
         mainContainer.addView(controlBar)
-        builder.setView(mainContainer)
+        rootLayout.addView(mainContainer)
+
+        // 🎯 Taschensperre Overlay (Sperrt alle Touch-Eingaben)
+        lockOverlay = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.parseColor("#EE000000")) // Dunkles, fast undurchsichtiges Overlay
+            visibility = android.view.View.GONE
+            isClickable = true
+            isFocusable = true
+            layoutParams = android.widget.FrameLayout.LayoutParams(
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT,
+                android.widget.FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+
+        val tvLockIcon = TextView(context).apply {
+            text = "🔒"
+            textSize = 48f
+            gravity = Gravity.CENTER
+        }
+
+        val tvLockInstruction = TextView(context).apply {
+            text = "Screen Locked\nProgram is executed in the background\n\nPress and hold 2s to unlock"
+            textSize = 18f
+            setTextColor(Color.WHITE)
+            gravity = Gravity.CENTER
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setPadding(0, (12 * density).toInt(), 0, 0)
+        }
+
+        val btnUnlockArea = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            gravity = Gravity.CENTER
+            setPadding((24 * density).toInt(), (16 * density).toInt(), (24 * density).toInt(), (16 * density).toInt())
+            background = createRoundedDrawable("#333333", 16f)
+            addView(tvLockIcon)
+            addView(tvLockInstruction)
+        }
+
+        // 🎯 2-Sekunden Long-Press Entsperrlogik
+        var unlockJob: Job? = null
+        btnUnlockArea.setOnTouchListener { _, event ->
+            when (event.action) {
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    tvLockInstruction.text = "Hold down..."
+                    unlockJob = scope.launch(Dispatchers.Main) {
+                        delay(2000) // 2 Sekunden Gedrückthalten abwarten
+                        lockOverlay.visibility = android.view.View.GONE
+                        tvLockInstruction.text = "Screen Locked\nPress and hold 2s to unlock"
+                        com.launcher_control_android.helper.util.ToastUtil.showToastMessage(context, "Unlocked")
+                    }
+                    true
+                }
+                android.view.MotionEvent.ACTION_UP, android.view.MotionEvent.ACTION_CANCEL -> {
+                    unlockJob?.cancel()
+                    unlockJob = null
+                    tvLockInstruction.text = "Screen Locked\nPress and hold 2s to unlock"
+                    true
+                }
+                else -> false
+            }
+        }
+
+        lockOverlay.addView(btnUnlockArea)
+        rootLayout.addView(lockOverlay)
+
+        builder.setView(rootLayout)
 
         alertDialog = builder.create().apply {
             setCanceledOnTouchOutside(false)
@@ -266,10 +370,12 @@ class ProgramTimelineDialog(
 
                     rowContainer.addView(leftCol)
                     rowContainer.addView(tvStep)
-                    // 🎯 Tap-Funktion: Beim Klick auf die Zeile direkt zu diesem Schritt springen
+                    // 🎯 Tap-Funktion: Beim Klick auf die Zeile direkt zu diesem Schritt springen (nur bei Pause)
                     val actionSequenceIndex = item.sequenceIndex - 1 // 0-basierter Index für currentSequence
                     rowContainer.setOnClickListener {
-                        executor.jumpToStep(actionSequenceIndex)
+                        if (executor.uiState.value.isPaused) {
+                            executor.jumpToStep(actionSequenceIndex)
+                        }
                     }
 
                     container.addView(rowContainer)

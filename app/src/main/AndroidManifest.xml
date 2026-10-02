@@ -18,6 +18,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -36,7 +40,8 @@
         tools:targetApi="31">
         <activity
             android:name=".main.ui.home.view.LauncherControlAct"
-            android:exported="false"/>
+            android:exported="false"
+            android:launchMode="singleTop" />
         <activity
             android:name=".main.ui.channel_list.view.ChannelListAct"
             android:exported="false" />
@@ -68,6 +73,22 @@
         <activity
             android:name=".main.ui.program_settings.view.ProgramSettingsAct"
             android:exported="false" />
+        <!-- Foreground Service für den Hintergrundablauf der Sequenzen -->
+        <service
+            android:name=".helper.service.ProgramExecutionService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+        <!-- FileProvider für das sichere Teilen von Profil-JSON-Dateien -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

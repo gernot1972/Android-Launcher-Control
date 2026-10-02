@@ -26,6 +26,11 @@ class ProgramSettingsAct : AppCompatActivity(), View.OnClickListener {
     private lateinit var stepAdapter: ProgramStepAdapter
     private var sequenceItems: MutableList<ProgramItemModel> = mutableListOf()
 
+    // Launcher zum Öffnen des Datei-Pickers für den Profil-Import
+    private val importProfileLauncher = registerForActivityResult(androidx.activity.result.contract.ActivityResultContracts.GetContent()) { uri ->
+        uri?.let { importProfileFromUri(it) }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView<ActProgramSettingsBinding>(this, R.layout.act_program_settings)
@@ -73,7 +78,7 @@ class ProgramSettingsAct : AppCompatActivity(), View.OnClickListener {
 
     private fun setupListeners() {
         binding.btnSaveProfileAs.setOnClickListener { showSaveProfileDialog() }
-        binding.btnLoadProfile.setOnClickListener { showLoadProfileDialog() }
+        binding.btnLoadProfile.setOnClickListener { showManageProfilesDialog() }
     }
 
     private fun updateProfileNameDisplay() {
@@ -130,20 +135,27 @@ class ProgramSettingsAct : AppCompatActivity(), View.OnClickListener {
         builder.show()
     }
 
-    private fun showLoadProfileDialog() {
+    private fun showManageProfilesDialog() {
         val profiles = prefs.programProfiles
-        if (profiles.isEmpty()) {
-            ToastUtil.showToastMessage(this, "No saved profiles available")
-            return
-        }
+        val optionsList = mutableListOf<String>()
 
-        val profileNames = profiles.map { it.name }.toTypedArray()
+        // Vorhandene Profile zur Liste hinzufügen
+        profiles.forEach { optionsList.add(it.name) }
+        // Die Import-Option steht IMMER an letzter Stelle (auch bei leerer Liste!)
+        optionsList.add("📂 Import Profile from File")
+
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Load Program Profile")
+        builder.setTitle("Manage Program Profiles")
 
-        builder.setItems(profileNames) { dialog, which ->
-            val selectedProfile = profiles[which]
-            showProfileOptionsDialog(selectedProfile)
+        builder.setItems(optionsList.toTypedArray()) { dialog, which ->
+            if (which < profiles.size) {
+                // Ein vorhandenes Profil wurde gewählt
+                val selectedProfile = profiles[which]
+                showProfileOptionsDialog(selectedProfile)
+            } else {
+                // "Import Profile from File" wurde gewählt
+                importProfileLauncher.launch("*/*")
+            }
             dialog.dismiss()
         }
 
@@ -152,19 +164,108 @@ class ProgramSettingsAct : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun showProfileOptionsDialog(profile: ProgramProfileModel) {
-        val options = arrayOf("Load Profile", "Delete Profile")
+        val options = arrayOf("Load Profile", "Share / Export Profile", "Save to Downloads", "Delete Profile")
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Profile: ${profile.name}")
 
         builder.setItems(options) { dialog, which ->
             when (which) {
                 0 -> loadProfile(profile)
-                1 -> confirmDeleteProfile(profile)
+                1 -> shareProfile(profile)
+                2 -> saveProfileToDownloads(profile)
+                3 -> confirmDeleteProfile(profile)
             }
             dialog.dismiss()
         }
         builder.setNegativeButton("Cancel") { dialog, _ -> dialog.cancel() }
         builder.show()
+    }
+
+    private fun shareProfile(profile: ProgramProfileModel) {
+        try {
+            val gson = com.google.gson.Gson()
+            val jsonString = gson.toJson(profile)
+            val fileName = "${profile.name.replace(" ", "_")}.json"
+            val file = java.io.File(cacheDir, fileName)
+            file.writeText(jsonString)
+
+            val contentUri = androidx.core.content.FileProvider.getUriForFile(
+                this,
+                "$packageName.provider",
+                file
+            )
+
+            val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                type = "application/json"
+                putExtra(android.content.Intent.EXTRA_STREAM, contentUri)
+                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+            startActivity(android.content.Intent.createChooser(shareIntent, "Share Profile"))
+        } catch (e: Exception) {
+            ToastUtil.showToastMessage(this, "Export failed: ${e.message}")
+        }
+    }
+
+    private fun saveProfileToDownloads(profile: ProgramProfileModel) {
+        try {
+            val gson = com.google.gson.Gson()
+            val jsonString = gson.toJson(profile)
+            val fileName = "${profile.name.replace(" ", "_")}.json"
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                val contentValues = android.content.ContentValues().apply {
+                    put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "application/json")
+                    put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS)
+                }
+                val resolver = contentResolver
+                val uri = resolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                if (uri != null) {
+                    resolver.openOutputStream(uri)?.use { outputStream ->
+                        outputStream.write(jsonString.toByteArray())
+                    }
+                    ToastUtil.showToastMessage(this, "Profile saved to Downloads folder")
+                } else {
+                    ToastUtil.showToastMessage(this, "Save to Downloads failed")
+                }
+            } else {
+                @Suppress("DEPRECATION")
+                val targetDir = android.os.Environment.getExternalStoragePublicDirectory(android.os.Environment.DIRECTORY_DOWNLOADS)
+                val file = java.io.File(targetDir, fileName)
+                file.writeText(jsonString)
+                ToastUtil.showToastMessage(this, "Profile saved to Downloads folder")
+            }
+        } catch (e: Exception) {
+            ToastUtil.showToastMessage(this, "Save failed: ${e.message}")
+        }
+    }
+
+    private fun importProfileFromUri(uri: android.net.Uri) {
+        try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val jsonString = inputStream?.bufferedReader()?.use { it.readText() }
+            if (!jsonString.isNullOrEmpty()) {
+                val gson = com.google.gson.Gson()
+                val importedProfile = gson.fromJson(jsonString, ProgramProfileModel::class.java)
+
+                if (importedProfile != null && !importedProfile.name.isNullOrEmpty()) {
+                    val profiles = prefs.programProfiles.toMutableList()
+                    val existingIndex = profiles.indexOfFirst { it.name.equals(importedProfile.name, ignoreCase = true) }
+                    if (existingIndex >= 0) {
+                        profiles[existingIndex] = importedProfile
+                    } else {
+                        profiles.add(importedProfile)
+                    }
+                    prefs.programProfiles = profiles
+                    loadProfile(importedProfile)
+                    ToastUtil.showToastMessage(this, "Profile '${importedProfile.name}' imported and loaded")
+                } else {
+                    ToastUtil.showToastMessage(this, "Invalid profile file format")
+                }
+            }
+        } catch (e: Exception) {
+            ToastUtil.showToastMessage(this, "Import failed: ${e.message}")
+        }
     }
 
     private fun loadProfile(profile: ProgramProfileModel) {
