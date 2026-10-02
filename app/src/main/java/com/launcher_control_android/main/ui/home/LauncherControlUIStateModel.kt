@@ -27,7 +27,7 @@ data class LauncherControlUIStateModel(
 
     fun hasUnitSelected(): Boolean = selectedUnit != null
 
-    fun hasUnitDataFetched(): Boolean = fetchedUnitModel != null
+    fun hasUnitDataFetched(): Boolean = hasUnitSelected() && fetchedUnitModel != null
 
     fun isThisUnitSelected(unitNumber: Int): Boolean {
         return selectedUnit?.unitNumber == unitNumber

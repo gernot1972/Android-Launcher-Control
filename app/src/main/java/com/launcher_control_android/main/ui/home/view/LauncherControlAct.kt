@@ -14,7 +14,10 @@ import androidx.activity.viewModels
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.databinding.ObservableField
+import android.content.Intent
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.launcher_control_android.AppConstants
 import com.launcher_control_android.AppConstants.Command.listOfFetchDataCommand
 import com.launcher_control_android.AppConstants.Command.listOfTestCommand
@@ -47,6 +50,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
+import com.launcher_control_android.main.ui.program_settings.view.ProgramSettingsAct
+import com.launcher_control_android.helper.util.ProgramPrimingHelper
+import com.launcher_control_android.helper.util.ProgramTimelineDialog
 
 @AndroidEntryPoint
 class LauncherControlAct :
@@ -61,6 +67,8 @@ class LauncherControlAct :
     private var showGatewayInfoJob: Job? = null
     private var stayArmedTimerJob: Job? = null
     private var autoupdateJob: Job? = null
+    private var programPrimingHelper: ProgramPrimingHelper? = null
+    private var programTimelineDialog: ProgramTimelineDialog? = null
 
     override val vm: LauncherControlVM by viewModels()
 
@@ -69,6 +77,26 @@ class LauncherControlAct :
     override fun init() {
         binding.showSecondaryProgress = showSecondaryProgress
         deviceAddress = prefs.savedBluetoothDevice?.address ?: ""
+
+        programTimelineDialog = ProgramTimelineDialog(
+            context = this,
+            scope = lifecycleScope,
+            executor = vm.programExecutor
+        )
+
+        programPrimingHelper = ProgramPrimingHelper(
+            context = this,
+            scope = lifecycleScope,
+            onSendCommand = { hex -> sendCommand(hex) },
+            onStartSequence = {
+                val sequence = prefs.programSequence
+                if (sequence.isNotEmpty()) {
+                    vm.programExecutor.prepareExecution(sequence)
+                    programTimelineDialog?.show()
+                }
+            }
+        )
+
         setListener()
         setObserver()
         setupBlinkAnimation()
@@ -420,6 +448,32 @@ class LauncherControlAct :
     }
 
     private fun setObserver() {
+        // Bluetooth-Befehle aus dem ProgramExecutor automatisch senden
+        vm.programCommandToSend.observe(this@LauncherControlAct) { command ->
+            if (!command.isNullOrEmpty()) {
+                sendCommand(command)
+            }
+        }
+
+        // UI-Status des ProgramExecutors beobachten
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                vm.programState.collect { state ->
+                    if (state.isRunning) {
+                        binding.btnStartProgram.text = if (state.isPaused) "Resume\nProgram" else "Stop\nProgram"
+                        binding.btnStartProgram.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                            if (state.isPaused) android.graphics.Color.parseColor("#FFA500") else android.graphics.Color.RED
+                        )
+                    } else {
+                        binding.btnStartProgram.text = "Start\nProgram"
+                        binding.btnStartProgram.backgroundTintList = android.content.res.ColorStateList.valueOf(
+                            androidx.core.content.ContextCompat.getColor(this@LauncherControlAct, R.color.colorSkyBlue)
+                        )
+                    }
+                }
+            }
+        }
+
         vm.uiState.observe(this@LauncherControlAct) { state ->
             // GEÄNDERT: Dynamische Größen- und Abstandsanpassung für tv_1 bis tv_4
             updateUnitButtonDimensions(state)
@@ -429,7 +483,7 @@ class LauncherControlAct :
 
             // 1. Rainbow-Glow-Animation (iOS-Style)
             val shouldAnimateGlow = if (state.isSoundOnlyMode()) {
-                state.hasUnitDataFetched() && !state.isDisarmed && state.hasUnitSelected()
+                state.hasUnitDataFetched() && !state.isNoResponse() && !state.isDisarmed && state.hasUnitSelected()
             } else {
                 state.getNextAvailableChannel() != null && !state.isDisarmed && state.hasUnitSelected()
             }
@@ -505,10 +559,12 @@ class LauncherControlAct :
     }
 
     private fun connectGateway() {
-        if (vm.uiState.value?.hasGatewayAndUnitSet() == true && vm.uiState.value?.isGatewayNotConnected() == true) {
+        if (vm.uiState.value?.isGatewaySetup == true) {
             checkBluetooth {
-                vm.setGatewayConnecting()
-                startConnectingBlinkAnimation()
+                if (vm.uiState.value?.isGatewayNotConnected() == true) {
+                    vm.setGatewayConnecting()
+                    startConnectingBlinkAnimation()
+                }
                 startBluetoothService {
                     setGatewayConnected()
                 }
@@ -526,6 +582,18 @@ class LauncherControlAct :
             }
             binding.invalidateAll()
             binding.executePendingBindings()
+        }
+    }
+
+    override fun onServicesDiscovered(gatt: BluetoothGatt?, isServiceFound: Boolean) {
+        super.onServicesDiscovered(gatt, isServiceFound)
+        runOnUiThread {
+            if (isServiceFound) {
+                setGatewayConnected()
+                if (prefs.autoLockRemote) {
+                    sendCommand("Prog-L1")
+                }
+            }
         }
     }
 
@@ -555,6 +623,24 @@ class LauncherControlAct :
                 vm.setPressureInBar(fetchedChannelModel.getPressure())
                 vm.setFetchedUnitData(fetchedChannelModel)
                 updateFieldBatteryUI() // GEÄNDERT: Akkubalken bei neuer Telemetrie direkt aktualisieren
+
+                // 🎯 Weiterleitung an Helper mit exakter Solldruck-Prüfung
+                val unitNo = fetchedChannelModel.getUnit()?.toIntOrNull() ?: 0
+                val sequence = prefs.programSequence
+                val requiredUnits = sequence.map { it.fireUnit }.filter { it in 1..4 }.distinct()
+                val isFail = fetchedChannelModel.isBarFail()
+                val currentBar = fetchedChannelModel.getBar() ?: 0
+                val targetBar = fetchedChannelModel.getPressure() ?: 0
+                val isReady = !isFail && currentBar >= targetBar // 🎯 Erst READY wenn Istdruck >= Solldruck
+
+                programPrimingHelper?.onTelemetryReceived(
+                    unitNo = unitNo,
+                    hasStatusUpdate = true,
+                    isReady = isReady,
+                    isFail = isFail,
+                    requiredUnits = requiredUnits
+                )
+
             } else if (response?.startsWith("V", ignoreCase = true) == true) {
                 vm.setVoltageResponse(response)
                 setVoltage()
@@ -1135,6 +1221,7 @@ class LauncherControlAct :
     }
 
     private val settingActResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        deviceAddress = prefs.savedBluetoothDevice?.address ?: ""
         vm.reloadState()
         connectGateway()
         vm.setSelectedUnit(null)
@@ -1175,8 +1262,23 @@ class LauncherControlAct :
                             }
                         } else {
                             // NEU: Wenn keine Unit gewählt ist, trennt ein einfacher Klick die Verbindung (Disconnect)
-                            bluetoothService?.disconnectBluetoothDevice()
-                            setGatewayDisconnected()
+                            if (prefs.autoLockRemote && bluetoothService?.isDeviceConnected() == true) {
+                                sendCommand("Prog-L0")
+                                lifecycleScope.launch(Dispatchers.Main) {
+                                    //delay(0)
+                                    bluetoothService?.disconnectBluetoothDevice()
+                                    stopGatewaySignalStrengthUpdate()
+                                    vm.setGatewayDisconnected()
+                                    binding.ivVoltage.isVisible = false
+                                    binding.tvVoltage.isVisible = false
+                                }
+                            } else {
+                                bluetoothService?.disconnectBluetoothDevice()
+                                stopGatewaySignalStrengthUpdate()
+                                vm.setGatewayDisconnected()
+                                binding.ivVoltage.isVisible = false
+                                binding.tvVoltage.isVisible = false
+                            }
                         }
                     }
                     else -> {
@@ -1272,11 +1374,21 @@ class LauncherControlAct :
             }
 
             R.id.btn_program_settings -> {
-                showToast("Program Settings")
+                startActivity(com.launcher_control_android.main.ui.program_settings.view.ProgramSettingsAct::class.java)
             }
 
             R.id.btn_start_program -> {
-                showToast("Start Program")
+                if (vm.programState.value.isRunning) {
+                    vm.stopProgram()
+                } else {
+                    val sequence = prefs.programSequence
+                    val requiredUnits = sequence.map { it.fireUnit }.filter { it in 1..4 }.distinct().sorted()
+                    if (sequence.isEmpty() || requiredUnits.isEmpty()) {
+                        showToast("No valid units defined in program")
+                    } else {
+                        programPrimingHelper?.showPreFlightDialog(requiredUnits)
+                    }
+                }
             }
         }
     }
@@ -1294,9 +1406,17 @@ class LauncherControlAct :
     private fun setGatewayDisconnected() {
         stopGatewaySignalStrengthUpdate()
         vm.setGatewayDisconnected()
+        resetSelectUnit()
         // GEÄNDERT: Batterie-Icon & Spannungstext bei getrenntem Gateway ausblenden
         binding.ivVoltage.isVisible = false
         binding.tvVoltage.isVisible = false
+    }
+
+    override fun onDestroy() {
+        if (prefs.autoLockRemote && vm.uiState.value?.isGatewayConnected() == true) {
+            sendCommand("Prog-L0")
+        }
+        super.onDestroy()
     }
 
     override fun onPause() {
@@ -1308,6 +1428,11 @@ class LauncherControlAct :
     override fun onResume() {
         super.onResume()
         startBlinkAnimation()
+
+        // 🎯 Falls die Verbindung getrennt ist, Hauptseite sofort auf NOT CONNECTED schalten
+        if (bluetoothService?.isDeviceConnected() == false) {
+            setGatewayDisconnected()
+        }
 
         /**
          * Reload unit

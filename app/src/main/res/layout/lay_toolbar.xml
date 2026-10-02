@@ -109,20 +109,24 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-        <!-- GEÄNDERT: Feste Toolbar-Höhe. textView schaltet dynamisch zwischen "Launcher Control" und "DISARM IN XXs" um -->
+        <!-- GEÄNDERT: Einzeilig im verbleibenden Platz zwischen linken Actions und rechtem Setting-Icon zentriert -->
         <TextView
             android:id="@+id/textView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/_60dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:gravity="center"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:ellipsize="end"
             android:onClick="@{click::onClick}"
-            android:text="@{title != null &amp;&amp; !title.isEmpty() ? title : @string/launcher_control}"
+            android:text="@{title != null ? title : @string/launcher_control}"
             android:textColor="@color/white"
             android:textSize="@dimen/_20sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_setting"
+            app:layout_constraintStart_toEndOf="@id/ll_leading_action"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/launcher_control" />
 

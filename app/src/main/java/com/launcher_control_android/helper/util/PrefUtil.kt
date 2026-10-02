@@ -33,6 +33,8 @@ import com.launcher_control_android.AppConstants.Prefs.UNIT_4_MODEL
 import com.launcher_control_android.Strings
 import com.launcher_control_android.data.model.response.DeviceModel
 import com.launcher_control_android.data.model.response.UnitModel
+import com.launcher_control_android.data.model.response.ProgramItemModel
+import com.launcher_control_android.data.model.response.ProgramProfileModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -116,6 +118,55 @@ constructor(@ApplicationContext context: Context) {
         get() = prefs.getBoolean(SHOW_BLUETOOTH_AUDIO, true)
         set(data) {
             prefEditor.putBoolean(SHOW_BLUETOOTH_AUDIO, data)
+            prefEditor.apply()
+        }
+
+    var autoLockRemote: Boolean
+        get() = prefs.getBoolean("AUTO_LOCK_REMOTE", false)
+        set(data) {
+            prefEditor.putBoolean("AUTO_LOCK_REMOTE", data)
+            prefEditor.apply()
+        }
+
+    var remoteStandardSound: Int
+        get() = prefs.getInt("REMOTE_STANDARD_SOUND", 1)
+        set(data) {
+            prefEditor.putInt("REMOTE_STANDARD_SOUND", data)
+            prefEditor.apply()
+        }
+
+    var remoteStandardMacro: Int
+        get() = prefs.getInt("REMOTE_STANDARD_MACRO", 1)
+        set(data) {
+            prefEditor.putInt("REMOTE_STANDARD_MACRO", data)
+            prefEditor.apply()
+        }
+
+    var remoteViewType: Int // 0 = SIMPLE Mode (Prog-T0), 1 = Advanced View (Prog-T1)
+        get() = prefs.getInt("REMOTE_VIEW_TYPE", 0)
+        set(data) {
+            prefEditor.putInt("REMOTE_VIEW_TYPE", data)
+            prefEditor.apply()
+        }
+
+    var remoteVolume: Int // 1..4 (Prog-V1..Prog-V4)
+        get() = prefs.getInt("REMOTE_VOLUME", 4)
+        set(data) {
+            prefEditor.putInt("REMOTE_VOLUME", data)
+            prefEditor.apply()
+        }
+
+    var remoteKillTimer: Int // 0..5 (Prog-K0..Prog-K5)
+        get() = prefs.getInt("REMOTE_KILL_TIMER", 3) // Standard: K3 = 15 Minuten
+        set(data) {
+            prefEditor.putInt("REMOTE_KILL_TIMER", data)
+            prefEditor.apply()
+        }
+
+    var lastVoltageResponse: String?
+        get() = prefs.getString("LAST_VOLTAGE_RESPONSE", null)
+        set(data) {
+            prefEditor.putString("LAST_VOLTAGE_RESPONSE", data)
             prefEditor.apply()
         }
 
@@ -242,6 +293,41 @@ constructor(@ApplicationContext context: Context) {
         get() = prefs.getStringSet(SELECTED_SOUND_FOR_RANDOMIZE, mutableSetOf()) ?: mutableSetOf()
         set(data) {
             prefEditor.putStringSet(SELECTED_SOUND_FOR_RANDOMIZE, data)
+            prefEditor.apply()
+        }
+
+    var programSequence: List<ProgramItemModel>
+        get() {
+            val json = prefs.getString("PROGRAM_SEQUENCE_CONFIG", null)
+            return if (!json.isNullOrEmpty()) {
+                json.fromJson<List<ProgramItemModel>>() ?: ProgramItemModel.getDefaultSequence()
+            } else {
+                ProgramItemModel.getDefaultSequence()
+            }
+        }
+        set(data) {
+            prefEditor.putString("PROGRAM_SEQUENCE_CONFIG", data.toJson())
+            prefEditor.apply()
+        }
+
+    var programProfiles: List<ProgramProfileModel>
+        get() {
+            val json = prefs.getString("PROGRAM_PROFILES_CONFIG", null)
+            return if (!json.isNullOrEmpty()) {
+                json.fromJson<List<ProgramProfileModel>>() ?: emptyList()
+            } else {
+                emptyList()
+            }
+        }
+        set(data) {
+            prefEditor.putString("PROGRAM_PROFILES_CONFIG", data.toJson())
+            prefEditor.apply()
+        }
+
+    var activeProfileName: String
+        get() = prefs.getString("ACTIVE_PROGRAM_PROFILE_NAME", "Default Program") ?: "Default Program"
+        set(value) {
+            prefEditor.putString("ACTIVE_PROGRAM_PROFILE_NAME", value)
             prefEditor.apply()
         }
 

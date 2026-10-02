@@ -34,12 +34,27 @@
             app:showBack="@{true}"
             app:title="@{@string/connection_configuration}" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/_24dp">
+
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/iv_background"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:adjustViewBounds="true"
             android:paddingBottom="@dimen/_24dp"
+            android:alpha="0.2"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,11 +67,304 @@
             android:layout_margin="@dimen/_16dp"
             android:text="@string/gateway_settings"
             android:textColor="@color/black"
-            android:textSize="@dimen/_16sp"
+            android:textSize="@dimen/_24sp"
             android:textStyle="bold"
+            android:paddingTop="@dimen/_10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+        <!-- 1. AutoLock Remote -->
+        <TextView
+            android:id="@+id/tv_autolock_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="AutoLock Remote"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_20sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_autolock_remote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:minHeight="0dp"
+            android:thumb="@drawable/thumb_selector"
+            app:track="@drawable/track_selector"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tv_autolock_title"
+            app:layout_constraintBottom_toBottomOf="@id/tv_autolock_title" />
+
+        <TextView
+            android:id="@+id/tv_autolock_desc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_6dp"
+            android:text="With this setting your Remote/Gateway will be locked automatically when the App is in use."
+            android:textColor="@color/black"
+            android:textSize="@dimen/_18sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_autolock_title" />
+
+        <!-- Klickbarer Header für ausklappbare Programmiergruppe -->
+        <TextView
+            android:id="@+id/tv_header_program_gateway"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_16dp"
+            android:layout_marginEnd="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_16dp"
+            android:text="Program Gateway ▶"
+            android:textColor="@color/colorPrimary"
+            android:textSize="@dimen/_20sp"
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_autolock_desc" />
+
+        <!-- Ausklappbarer Container (standardmäßig GONE / eingeklappt) -->
+        <LinearLayout
+            android:id="@+id/layout_program_gateway"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_header_program_gateway">
+
+            <!-- 1. Preselected Sound -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_12dp">
+                <TextView
+                    android:id="@+id/tv_std_sound_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_16dp"
+                    android:text="Preselected Sound"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <Spinner
+                    android:id="@+id/spinner_std_sound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_std_sound_title"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_std_sound_title" />
+                <TextView
+                    android:id="@+id/btn_send_std_sound"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    android:background="@drawable/shape_rect_rounded_border_4"
+                    android:paddingHorizontal="@dimen/_16dp"
+                    android:paddingVertical="@dimen/_10dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Send Setting to Remote / Gateway"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_std_sound_title" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 2. Volumelevel (jetzt direkt unter Sound) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_12dp">
+                <TextView
+                    android:id="@+id/tv_remote_volume_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_16dp"
+                    android:text="Volumelevel"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <Spinner
+                    android:id="@+id/spinner_remote_volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_remote_volume_title"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_remote_volume_title" />
+                <TextView
+                    android:id="@+id/btn_send_remote_volume"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    android:background="@drawable/shape_rect_rounded_border_4"
+                    android:paddingHorizontal="@dimen/_16dp"
+                    android:paddingVertical="@dimen/_10dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Send Setting to Remote / Gateway"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_remote_volume_title" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 3. Sound&Fire Macro -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_12dp">
+                <TextView
+                    android:id="@+id/tv_std_macro_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_16dp"
+                    android:text="Sound&amp;Fire Macro"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <Spinner
+                    android:id="@+id/spinner_std_macro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_std_macro_title"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_std_macro_title" />
+                <TextView
+                    android:id="@+id/btn_send_std_macro"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    android:background="@drawable/shape_rect_rounded_border_4"
+                    android:paddingHorizontal="@dimen/_16dp"
+                    android:paddingVertical="@dimen/_10dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Send Setting to Remote / Gateway"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_std_macro_title" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 4. Remotemode -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_12dp">
+                <TextView
+                    android:id="@+id/tv_remote_view_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_16dp"
+                    android:text="Remotemode"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <Spinner
+                    android:id="@+id/spinner_remote_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_remote_view_title"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_remote_view_title" />
+                <TextView
+                    android:id="@+id/btn_send_remote_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    android:background="@drawable/shape_rect_rounded_border_4"
+                    android:paddingHorizontal="@dimen/_16dp"
+                    android:paddingVertical="@dimen/_10dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Send Setting to Remote / Gateway"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_remote_view_title" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 5. Autoshutdown -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_12dp">
+                <TextView
+                    android:id="@+id/tv_remote_kill_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_16dp"
+                    android:text="Autoshutdown"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+                <Spinner
+                    android:id="@+id/spinner_remote_kill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_remote_kill_title"
+                    app:layout_constraintBottom_toBottomOf="@id/tv_remote_kill_title" />
+                <TextView
+                    android:id="@+id/btn_send_remote_kill"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_6dp"
+                    android:layout_marginEnd="@dimen/_16dp"
+                    android:onClick="@{click::onClick}"
+                    android:background="@drawable/shape_rect_rounded_border_4"
+                    android:paddingHorizontal="@dimen/_16dp"
+                    android:paddingVertical="@dimen/_10dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Send Setting to Remote / Gateway"
+                    android:textColor="@color/colorPrimary"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tv_remote_kill_title" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/divider_top_settings"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_program_gateway" />
 
         <TextView
             android:id="@+id/tv_no_gateway_selected"
@@ -65,7 +373,7 @@
             android:layout_margin="@dimen/_16dp"
             android:text="@string/no_gateway_selected"
             android:textColor="@color/black"
-            android:textSize="@dimen/_16sp"
+            android:textSize="@dimen/_18sp"
             app:layout_constraintBottom_toBottomOf="@id/btn_select_device"
             app:layout_constraintEnd_toStartOf="@id/btn_select_device"
             app:layout_constraintStart_toStartOf="parent"
@@ -75,16 +383,18 @@
             android:id="@+id/btn_select_device"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_40dp"
+            android:layout_marginTop="@dimen/_16dp"
             android:layout_marginEnd="@dimen/_16dp"
-            android:onClick="@{click::onClick}"
             android:background="@drawable/shape_rect_rounded_border_4"
-            android:paddingHorizontal="@dimen/_10dp"
-            android:paddingVertical="@dimen/_6dp"
+            android:onClick="@{click::onClick}"
+            android:paddingVertical="@dimen/_10dp"
+            android:paddingHorizontal="@dimen/_50dp"
             android:text="@string/select_device"
             android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+            app:layout_constraintTop_toBottomOf="@+id/divider_top_settings" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/group_no_gateway_selected"
@@ -102,7 +412,7 @@
             android:text="@{vm.savedBluetoothDevice.name}"
             tools:text="Ankit's Mackbook Air"
             android:textColor="@color/black"
-            android:textSize="@dimen/_16sp"
+            android:textSize="@dimen/_20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@id/btn_delete"
             app:layout_constraintEnd_toStartOf="@id/btn_delete"
@@ -117,7 +427,7 @@
             android:text="@{@string/device_uuid_colon(vm.savedBluetoothDevice.address)}"
             tools:text="Device UUID: 340,000,000,000,000,000,000,000,000,000,000,000,000"
             android:textColor="@color/black"
-            android:textSize="@dimen/_14sp"
+            android:textSize="@dimen/_18sp"
             app:layout_constraintEnd_toEndOf="@id/btn_delete"
             app:layout_constraintStart_toStartOf="@id/tv_selected_gateway_name"
             app:layout_constraintTop_toBottomOf="@id/btn_delete" />
@@ -129,7 +439,7 @@
             android:layout_marginTop="@dimen/_6dp"
             tools:text="Device Voltage: 3.77V"
             android:textColor="@color/black"
-            android:textSize="@dimen/_14sp"
+            android:textSize="@dimen/_18sp"
             android:visibility="gone"
             tools:visibility="visible"
             app:layout_constraintEnd_toStartOf="@id/iv_voltage"
@@ -143,7 +453,7 @@
             android:layout_marginTop="@dimen/_6dp"
             tools:text="Firmware: 0.6"
             android:textColor="@color/black"
-            android:textSize="@dimen/_14sp"
+            android:textSize="@dimen/_18sp"
             android:visibility="gone"
             tools:visibility="visible"
             app:layout_constraintEnd_toStartOf="@id/iv_voltage"
@@ -168,16 +478,18 @@
             android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginTop="@dimen/_16dp"
             android:layout_marginEnd="@dimen/_16dp"
             android:onClick="@{click::onClick}"
             android:background="@drawable/shape_rect_rounded_border_4"
-            android:paddingHorizontal="@dimen/_30dp"
+            android:paddingHorizontal="@dimen/_20dp"
             android:paddingVertical="@dimen/_6dp"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:text="@string/delete"
             android:textColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title" />
+            app:layout_constraintTop_toBottomOf="@+id/divider_top_settings" />
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider"
@@ -195,102 +507,100 @@
             android:layout_height="wrap_content"
             android:visibility="@{vm.savedBluetoothDevice != null}"
             tools:visibility="visible"
-            app:constraint_referenced_ids="tv_selected_gateway_name, tv_selected_device, btn_delete, divider, btn_unit_1, btn_unit_2, btn_unit_3, btn_unit_4" />
+            app:constraint_referenced_ids="tv_selected_gateway_name, tv_selected_device, btn_delete, divider, tv_header_program_gateway" />
 
+        <!-- Reihe 1: Unit 1 & Unit 2 nebeneinander -->
         <TextView
             android:id="@+id/btn_unit_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginEnd="@dimen/_8dp"
             android:background="@drawable/shape_rect_rounded_border_4"
             android:paddingHorizontal="@dimen/_20dp"
             android:paddingVertical="@dimen/_8dp"
             android:text="@string/test_unit_1"
+            android:textStyle="bold"
             android:onClick="@{click::onClick}"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_16sp"
-            android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/btn_unit_2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            android:textSize="@dimen/_18sp"
+            app:layout_constraintEnd_toStartOf="@+id/btn_unit_2"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/divider"
-            app:layout_constraintVertical_bias="0.15"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintTop_toBottomOf="@+id/divider" />
 
         <TextView
             android:id="@+id/btn_unit_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16dp"
+            android:layout_marginStart="@dimen/_8dp"
             android:background="@drawable/shape_rect_rounded_border_4"
             android:paddingHorizontal="@dimen/_20dp"
             android:paddingVertical="@dimen/_8dp"
             android:text="@string/test_unit_2"
             android:onClick="@{click::onClick}"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_16sp"
+            android:textSize="@dimen/_18sp"
             android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/btn_unit_3"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_unit_1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_unit_1" />
+            app:layout_constraintStart_toEndOf="@+id/btn_unit_1"
+            app:layout_constraintTop_toTopOf="@+id/btn_unit_1" />
 
+        <!-- Reihe 2: Unit 3 & Unit 4 nebeneinander -->
         <TextView
             android:id="@+id/btn_unit_3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16dp"
+            android:layout_marginTop="@dimen/_12dp"
+            android:layout_marginEnd="@dimen/_8dp"
             android:background="@drawable/shape_rect_rounded_border_4"
             android:paddingHorizontal="@dimen/_20dp"
             android:paddingVertical="@dimen/_8dp"
             android:text="@string/test_unit_3"
             android:onClick="@{click::onClick}"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_16sp"
+            android:textSize="@dimen/_18sp"
             android:textStyle="bold"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/btn_unit_4"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/btn_unit_4"
+            app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_unit_2" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_unit_1" />
 
         <TextView
             android:id="@+id/btn_unit_4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_16dp"
-            android:layout_marginBottom="@dimen/_20dp"
+            android:layout_marginStart="@dimen/_8dp"
             android:background="@drawable/shape_rect_rounded_border_4"
             android:paddingHorizontal="@dimen/_20dp"
             android:paddingVertical="@dimen/_8dp"
             android:text="@string/test_unit_4"
             android:textColor="@color/colorPrimary"
-            android:textSize="@dimen/_16sp"
+            android:textSize="@dimen/_18sp"
             android:textStyle="bold"
-            android:visibility="gone"
             android:onClick="@{click::onClick}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/btn_unit_3"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_unit_3" />
+            app:layout_constraintStart_toEndOf="@+id/btn_unit_3"
+            app:layout_constraintTop_toTopOf="@+id/btn_unit_3" />
 
+        <!-- Demo Button direkt unter den Test-Buttons -->
         <Button
             android:id="@+id/btn_demo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Demo Button"
-            android:layout_margin="@dimen/_20dp"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.9"
+            android:textSize="@dimen/_18sp"
+            android:layout_marginTop="@dimen/_20dp"
+            android:layout_marginBottom="@dimen/_20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_unit_3" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
         <include
             layout="@layout/progress"

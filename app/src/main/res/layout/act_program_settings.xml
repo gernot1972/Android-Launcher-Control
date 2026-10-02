@@ -1,0 +1,109 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="click"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000">
+
+        <!-- Toolbar oben -->
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/lay_toolbar"
+            app:click="@{click}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:showBack="@{true}"
+            app:showSetting="@{true}"
+            app:title='@{"Program Settings"}' />
+
+        <!-- Profil-Steuerungsbereich oben (Programmname, Laden, Speichern) -->
+        <LinearLayout
+            android:id="@+id/layout_profile_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#1A1A1A"
+            android:orientation="vertical"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="4dp"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
+
+            <TextView
+                android:id="@+id/tv_active_profile_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Active Profile: Default Program"
+                android:textColor="#FF9800"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_load_profile"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#333333"
+                    android:text="Manage Profile"
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:maxLines="1"
+                    android:paddingHorizontal="4dp" />
+
+                <Button
+                    android:id="@+id/btn_save_profile_as"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FF9800"
+                    android:text="Save as..."
+                    android:textAllCaps="false"
+                    android:textColor="#000000"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Informationstext -->
+        <TextView
+            android:id="@+id/tv_program_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="0dp"
+            android:paddingBottom="6dp"
+            android:text="Configure up to 20 sequence steps. Changes are auto-saved to current default sequence."
+            android:textColor="#AAAAAA"
+            android:textSize="16sp"
+            app:layout_constraintTop_toBottomOf="@id/layout_profile_header" />
+
+        <!-- Liste der 20 Sequenzschritte -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_program_steps"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_program_info"
+            tools:listitem="@layout/item_program_step" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

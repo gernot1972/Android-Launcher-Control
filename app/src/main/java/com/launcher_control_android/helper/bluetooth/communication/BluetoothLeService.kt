@@ -76,9 +76,13 @@ class BluetoothLeService private constructor(val context: Context) {
                 bluetoothCommunicationListener?.onReadRemoteRssi(gatt, rssi, status)
             }
         }
-
         @SuppressLint("MissingPermission")
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
+            // Ignoriere verzögerte Disconnect-Events von alten/verworfenen GATT-Instanzen
+            if (gatt != null && bluetoothGatt != null && gatt != bluetoothGatt) {
+                return
+            }
+
             if (newState == BluetoothProfile.STATE_CONNECTED) {
                 if (connectionState == STATE_DISCONNECTED) {
                     bluetoothGatt?.discoverServices()
@@ -162,7 +166,7 @@ class BluetoothLeService private constructor(val context: Context) {
                     characteristic,
                     isSuccess = true
                 )
-                checkCharacteristicValue(gatt, characteristic)
+                //checkCharacteristicValue(gatt, characteristic) // entfernt für stabile Verbindung
 //                broadcastUpdate(ACTION_COMMAND_SENT_SUCCESS)
             } else {
                 bluetoothCommunicationListener?.onCharacteristicWrite(
@@ -280,6 +284,14 @@ class BluetoothLeService private constructor(val context: Context) {
     fun connect(address: String): Boolean {
         bluetoothAdapter?.let { adapter ->
             try {
+                if (isDeviceConnected() && bluetoothGatt?.device?.address == address) {
+                    return true
+                }
+                bluetoothGatt?.disconnect()
+                bluetoothGatt?.close()
+                bluetoothGatt = null
+                connectionState = STATE_DISCONNECTED
+
                 val device = adapter.getRemoteDevice(address)
                 // connect to the GATT server on the device
                 bluetoothGatt = device.connectGatt(context, false, bluetoothGattCallback, 2)
@@ -320,10 +332,16 @@ class BluetoothLeService private constructor(val context: Context) {
         }
 
         characteristic.let {
-            it.setValue(command.hexDecodedData())
+            val isTextCommand = command.startsWith("Prog-", ignoreCase = true)
+            val bytes = if (isTextCommand) {
+                command.toByteArray(Charsets.UTF_8)
+            } else {
+                command.hexDecodedData()
+            }
+            it.setValue(bytes)
             val success = bluetoothGatt?.writeCharacteristic(it) ?: false
             "Write status: $command $success".logE()
-            if (!isSoundCommand(command)) {
+            if (!isSoundCommand(command) && !isTextCommand) {
                 setTimeOutCallBack(success)
             }
             if (!success) {
